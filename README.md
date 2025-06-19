@@ -1,2 +1,2 @@
 # GHOST
-Golden Hour Operations and Strategic Threat assessment
+Golden Hour Operations and Strategic Triage
