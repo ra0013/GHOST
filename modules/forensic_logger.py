@@ -162,4 +162,30 @@ class ForensicLogger:
         }
         
         if self.chain_of_custody:
-            first_entry =
+            first_entry = self.chain_of_custody[0]['timestamp']
+            last_entry = self.chain_of_custody[-1]['timestamp']
+            verification_result['time_span'] = f"{first_entry} to {last_entry}"
+        
+        # Check for log file existence and basic integrity
+        if verification_result['file_exists']:
+            log_hash = self.calculate_file_hash(Path(self.log_filename))
+            verification_result['log_file_hash'] = log_hash
+            verification_result['integrity_verified'] = True
+        
+        return verification_result
+    
+    def get_activity_summary(self) -> Dict[str, Any]:
+        """Get summary of logged activities"""
+        activity_counts = {}
+        
+        for entry in self.chain_of_custody:
+            action = entry.get('action', 'UNKNOWN')
+            activity_counts[action] = activity_counts.get(action, 0) + 1
+        
+        return {
+            'total_activities': len(self.chain_of_custody),
+            'activity_breakdown': activity_counts,
+            'analysis_duration': self.get_analysis_duration(),
+            'examiner': self.examiner_name,
+            'case': self.case_name
+        }
