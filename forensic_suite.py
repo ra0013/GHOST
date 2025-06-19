@@ -1,17 +1,7 @@
 #!/usr/bin/env python3
 """
-Modular Forensic Intelligence Suite
-Clean separation of concerns with pluggable components
-
-Modules:
-- config_manager.py: Configuration management
-- database_inspector.py: Database analysis and inspection  
-- pattern_analyzer.py: Data pattern recognition
-- encryption_detector.py: Encryption detection and bypass
-- intelligence_modules.py: Crime-specific analysis modules
-- forensic_logger.py: Chain of custody and logging
-- data_extractor.py: Database extraction with schema mapping
-- report_generator.py: Intelligence reporting and visualization
+Forensic Intelligence Suite - Working Main Module
+Simplified version with core functionality
 """
 
 import os
@@ -21,373 +11,425 @@ from typing import Dict, List, Any, Optional
 import json
 import datetime
 
-# Add modules directory to path for imports
+# Add modules to path
 sys.path.insert(0, str(Path(__file__).parent / "modules"))
 
-# Core module imports
-from config_manager import ConfigurationManager
-from database_inspector import DatabaseInspector
-from pattern_analyzer import PatternAnalyzer
-from encryption_detector import EncryptionDetector
-from intelligence_modules import IntelligenceModuleFactory
-from forensic_logger import ForensicLogger
-from data_extractor import DataExtractor
-from report_generator import ReportGenerator
+# Import the fixed modules
+try:
+    from config_manager import ConfigurationManager
+    from database_inspector import DatabaseInspector
+    from encryption_detector import EncryptionDetector
+    from intelligence_modules import IntelligenceModuleFactory
+    from forensic_logger import ForensicLogger
+    from data_extractor import DataExtractor
+    print("✅ All modules imported successfully")
+except ImportError as e:
+    print(f"❌ Error importing modules: {e}")
+    print("Make sure all module files are in the 'modules' directory")
+    sys.exit(1)
 
-class ForensicIntelligenceSuite:
-    """Main orchestrator for the modular forensic intelligence suite"""
+class SimplifiedForensicSuite:
+    """Simplified forensic intelligence suite for testing"""
     
-    def __init__(self, case_name: str, examiner_name: str, config_dir: str = "forensic_configs"):
+    def __init__(self, case_name: str, examiner_name: str):
         self.case_name = case_name
         self.examiner_name = examiner_name
         
+        print(f"🔍 Initializing Forensic Intelligence Suite")
+        print(f"   Case: {case_name}")
+        print(f"   Examiner: {examiner_name}")
+        
         # Initialize core components
-        self.config_manager = ConfigurationManager(config_dir)
-        self.logger = ForensicLogger(case_name, examiner_name)
-        self.inspector = DatabaseInspector(self.logger)
-        self.pattern_analyzer = PatternAnalyzer()
-        self.encryption_detector = EncryptionDetector()
-        self.data_extractor = DataExtractor(self.config_manager, self.logger)
-        self.report_generator = ReportGenerator(case_name, examiner_name)
+        try:
+            self.config_manager = ConfigurationManager()
+            self.logger = ForensicLogger(case_name, examiner_name)
+            self.inspector = DatabaseInspector(self.logger)
+            self.encryption_detector = EncryptionDetector()
+            self.data_extractor = DataExtractor(self.config_manager, self.logger)
+            
+            # Initialize intelligence module factory
+            self.module_factory = IntelligenceModuleFactory(
+                self.config_manager.keywords,
+                self.config_manager.modules,
+                self.logger
+            )
+            
+            print("✅ All components initialized successfully")
+            
+        except Exception as e:
+            print(f"❌ Error initializing components: {e}")
+            raise
         
-        # Initialize intelligence module factory
-        self.module_factory = IntelligenceModuleFactory(
-            self.config_manager.keywords,
-            self.config_manager.modules,
-            self.logger
-        )
-        
-        # Analysis results
-        self.extracted_data = {}
-        self.intelligence_findings = []
-        self.analysis_metadata = {}
-        
-        self.logger.log_action("SUITE_INITIALIZED", f"Forensic suite initialized for case {case_name}")
+        # Results storage
+        self.analysis_results = {}
     
-    def analyze_extraction(self, extraction_path: str, selected_modules: List[str] = None) -> Dict[str, Any]:
-        """Main analysis pipeline"""
+    def analyze_path(self, extraction_path: str) -> Dict[str, Any]:
+        """Analyze a forensic extraction path"""
         extraction_path = Path(extraction_path)
         
         if not extraction_path.exists():
-            raise FileNotFoundError(f"Extraction path not found: {extraction_path}")
+            raise FileNotFoundError(f"Path not found: {extraction_path}")
         
-        self.logger.log_action("ANALYSIS_START", f"Starting analysis of {extraction_path}")
+        print(f"\n🔍 Starting analysis of: {extraction_path}")
         
-        # Step 1: Discovery phase
-        discovered_databases = self._discover_databases(extraction_path)
+        # Step 1: Discover databases
+        print("\n📁 Step 1: Database Discovery")
+        databases = self._discover_databases(extraction_path)
         
-        # Step 2: Database inspection and configuration
-        configured_databases = self._inspect_and_configure_databases(discovered_databases)
+        # Step 2: Analyze discovered databases
+        print("\n🔍 Step 2: Database Analysis")
+        analyzed_databases = self._analyze_databases(databases)
         
-        # Step 3: Data extraction
-        self._extract_data_from_databases(configured_databases)
+        # Step 3: Extract sample data
+        print("\n📊 Step 3: Data Extraction")
+        extracted_data = self._extract_sample_data(analyzed_databases)
         
-        # Step 4: Intelligence analysis
-        self._run_intelligence_analysis(selected_modules)
+        # Step 4: Run intelligence analysis (simplified)
+        print("\n🧠 Step 4: Intelligence Analysis")
+        intelligence_findings = self._run_basic_intelligence(extracted_data)
         
-        # Step 5: Generate comprehensive report
-        report = self._generate_final_report()
+        # Step 5: Generate report
+        print("\n📋 Step 5: Report Generation")
+        report = self._generate_simple_report(databases, extracted_data, intelligence_findings)
         
-        self.logger.log_action("ANALYSIS_COMPLETE", f"Analysis completed for {self.case_name}")
-        
+        print("\n✅ Analysis complete!")
         return report
     
     def _discover_databases(self, extraction_path: Path) -> List[Dict[str, Any]]:
-        """Discover all potential databases in the extraction"""
-        self.logger.log_action("DISCOVERY_START", "Starting database discovery phase")
-        
+        """Discover database files in extraction"""
         discovered = []
         
-        # Look for configured database paths
-        for db_name, db_config in self.config_manager.data_paths.items():
-            db_path = self.data_extractor.find_database_file(extraction_path, db_config)
-            if db_path:
+        # Look for SQLite databases
+        db_patterns = ["*.db", "*.sqlite", "*.sqlitedb"]
+        
+        for pattern in db_patterns:
+            for db_path in extraction_path.rglob(pattern):
                 discovered.append({
-                    'name': db_name,
+                    'name': db_path.stem,
                     'path': db_path,
-                    'config': db_config,
-                    'source': 'configured'
+                    'size': db_path.stat().st_size if db_path.exists() else 0,
+                    'type': 'discovered'
                 })
-                self.logger.log_action("DB_DISCOVERED", f"Found configured database: {db_name} at {db_path}")
         
-        # Look for additional SQLite databases
-        additional_dbs = list(extraction_path.rglob("*.db")) + list(extraction_path.rglob("*.sqlite")) + list(extraction_path.rglob("*.sqlitedb"))
+        print(f"   Found {len(discovered)} database files")
+        for db in discovered[:5]:  # Show first 5
+            print(f"   - {db['name']} ({db['size']} bytes)")
         
-        for db_path in additional_dbs:
-            # Skip if already found in configured databases
-            if not any(str(db_path) == str(d['path']) for d in discovered):
-                discovered.append({
-                    'name': f"unknown_{db_path.stem}",
-                    'path': db_path,
-                    'config': None,
-                    'source': 'discovered'
-                })
-                self.logger.log_action("DB_DISCOVERED", f"Found additional database: {db_path}")
-        
-        self.logger.log_action("DISCOVERY_COMPLETE", f"Discovered {len(discovered)} databases")
         return discovered
     
-    def _inspect_and_configure_databases(self, discovered_databases: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-        """Inspect databases and generate configurations for unknown ones"""
-        self.logger.log_action("INSPECTION_START", "Starting database inspection phase")
+    def _analyze_databases(self, databases: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """Analyze database structure and check encryption"""
+        analyzed = []
         
-        configured = []
-        
-        for db_info in discovered_databases:
+        for db_info in databases:
             db_path = db_info['path']
             
-            # Check for encryption first
+            print(f"   Analyzing: {db_info['name']}")
+            
+            # Check encryption
             encryption_info = self.encryption_detector.detect_encryption(db_path)
+            db_info['encryption'] = encryption_info
             
             if encryption_info['is_encrypted']:
-                self.logger.log_action("ENCRYPTED_DB", f"Encrypted database detected: {db_path}")
-                db_info['encryption'] = encryption_info
+                print(f"     ⚠️  Encrypted database detected")
                 db_info['status'] = 'encrypted'
-                configured.append(db_info)
-                continue
-            
-            # Inspect database structure
-            inspection_result = self.inspector.inspect_database(db_path)
-            
-            if inspection_result.get('error'):
-                self.logger.log_action("INSPECTION_ERROR", f"Failed to inspect {db_path}: {inspection_result['error']}")
-                db_info['status'] = 'error'
-                configured.append(db_info)
-                continue
-            
-            # Analyze patterns
-            pattern_analysis = self.pattern_analyzer.analyze_database_patterns(db_path, inspection_result)
-            
-            # Generate or use existing configuration
-            if db_info['source'] == 'configured':
-                db_info['schema'] = self.config_manager.schemas.get(db_info['name'])
-                db_info['status'] = 'configured'
             else:
-                # Generate configuration for unknown database
-                generated_config = self.inspector.generate_smart_configuration(
-                    inspection_result, pattern_analysis, db_info['name']
-                )
-                db_info['schema'] = generated_config
-                db_info['status'] = 'auto_configured'
-                
-                # Optionally save generated config
-                if generated_config.get('confidence', 'low') in ['high', 'medium']:
-                    self._save_generated_config(db_info['name'], generated_config)
+                # Inspect structure
+                try:
+                    inspection = self.inspector.inspect_database(db_path)
+                    db_info['inspection'] = inspection
+                    db_info['status'] = 'analyzed'
+                    
+                    table_count = inspection.get('table_count', 0)
+                    print(f"     ✅ {table_count} tables found")
+                    
+                except Exception as e:
+                    print(f"     ❌ Error: {e}")
+                    db_info['status'] = 'error'
+                    db_info['error'] = str(e)
             
-            db_info['inspection'] = inspection_result
-            db_info['patterns'] = pattern_analysis
-            configured.append(db_info)
+            analyzed.append(db_info)
         
-        self.logger.log_action("INSPECTION_COMPLETE", f"Configured {len(configured)} databases")
-        return configured
+        return analyzed
     
-    def _extract_data_from_databases(self, configured_databases: List[Dict[str, Any]]):
-        """Extract data from all configured databases"""
-        self.logger.log_action("EXTRACTION_START", "Starting data extraction phase")
+    def _extract_sample_data(self, databases: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """Extract sample data from databases"""
+        extracted_data = {}
         
-        for db_info in configured_databases:
-            if db_info['status'] in ['encrypted', 'error']:
+        for db_info in databases:
+            if db_info['status'] != 'analyzed':
                 continue
             
             db_name = db_info['name']
             db_path = db_info['path']
-            schema = db_info.get('schema')
             
-            if not schema:
-                self.logger.log_action("EXTRACTION_SKIP", f"No schema available for {db_name}")
-                continue
+            print(f"   Extracting from: {db_name}")
             
             try:
-                extracted_data = self.data_extractor.extract_from_database(db_path, schema)
-                self.extracted_data[db_name] = {
-                    'data': extracted_data,
-                    'source_path': str(db_path),
-                    'extraction_time': datetime.datetime.now().isoformat(),
-                    'record_count': len(extracted_data)
-                }
+                # Get sample data from each table
+                inspection = db_info.get('inspection', {})
+                tables = inspection.get('tables', {})
                 
-                self.logger.log_action("EXTRACTION_SUCCESS", f"Extracted {len(extracted_data)} records from {db_name}")
+                db_data = []
+                for table_name, table_info in tables.items():
+                    if table_info.get('row_count', 0) > 0:
+                        sample_data = self.data_extractor.extract_sample_data(
+                            db_path, table_name, limit=5
+                        )
+                        if sample_data:
+                            db_data.extend(sample_data)
+                
+                if db_data:
+                    extracted_data[db_name] = {
+                        'data': db_data,
+                        'record_count': len(db_data),
+                        'source_path': str(db_path)
+                    }
+                    print(f"     ✅ {len(db_data)} sample records extracted")
                 
             except Exception as e:
-                self.logger.log_action("EXTRACTION_ERROR", f"Failed to extract from {db_name}: {str(e)}")
+                print(f"     ❌ Extraction error: {e}")
         
-        total_records = sum(data['record_count'] for data in self.extracted_data.values())
-        self.logger.log_action("EXTRACTION_COMPLETE", f"Extracted {total_records} total records")
+        return extracted_data
     
-    def _run_intelligence_analysis(self, selected_modules: List[str] = None):
-        """Run intelligence analysis on extracted data"""
-        self.logger.log_action("INTELLIGENCE_START", "Starting intelligence analysis phase")
+    def _run_basic_intelligence(self, extracted_data: Dict[str, Any]) -> List[Dict[str, Any]]:
+        """Run basic intelligence analysis on extracted data"""
+        findings = []
         
-        if selected_modules is None:
-            selected_modules = list(self.config_manager.modules.keys())
+        # Create mock communication data for analysis
+        communications = []
+        for db_name, db_data in extracted_data.items():
+            for record in db_data['data']:
+                # Try to normalize record to communication format
+                comm = {
+                    'source': db_name,
+                    'timestamp': datetime.datetime.now().isoformat(),
+                    'content': str(record),  # Simple string conversion
+                    'contact': 'Unknown',
+                    'type': 'DATA_RECORD'
+                }
+                communications.append(comm)
         
-        # Consolidate all communication data
-        all_communications = self._consolidate_communications()
+        if not communications:
+            print("   No communications found for analysis")
+            return findings
         
-        if not all_communications:
-            self.logger.log_action("INTELLIGENCE_SKIP", "No communication data found for analysis")
-            return
+        print(f"   Analyzing {len(communications)} records")
         
-        # Run each selected module
-        for module_name in selected_modules:
-            if not self.config_manager.modules.get(module_name, {}).get('enabled', True):
-                continue
-            
+        # Run available intelligence modules
+        available_modules = self.module_factory.get_available_modules()
+        
+        for module_name in available_modules:
             try:
                 module = self.module_factory.create_module(module_name)
                 if module:
-                    findings = module.analyze(all_communications)
-                    
-                    # Add metadata to findings
-                    for finding in findings:
-                        finding['analysis_metadata'] = {
-                            'module_version': module.version,
-                            'analysis_time': datetime.datetime.now().isoformat(),
-                            'case_name': self.case_name,
-                            'examiner': self.examiner_name
-                        }
-                    
-                    self.intelligence_findings.extend(findings)
-                    self.logger.log_action("MODULE_COMPLETE", f"{module_name} found {len(findings)} indicators")
-                
+                    module_findings = module.analyze(communications)
+                    findings.extend(module_findings)
+                    print(f"     {module_name}: {len(module_findings)} indicators")
             except Exception as e:
-                self.logger.log_action("MODULE_ERROR", f"Error in {module_name}: {str(e)}")
+                print(f"     ❌ {module_name} error: {e}")
         
-        self.logger.log_action("INTELLIGENCE_COMPLETE", f"Found {len(self.intelligence_findings)} total indicators")
+        return findings
     
-    def _consolidate_communications(self) -> List[Dict[str, Any]]:
-        """Consolidate communication data from all sources"""
-        communications = []
+    def _generate_simple_report(self, databases: List[Dict[str, Any]], 
+                               extracted_data: Dict[str, Any],
+                               intelligence_findings: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """Generate a simple analysis report"""
         
-        for db_name, db_data in self.extracted_data.items():
-            for record in db_data['data']:
-                # Normalize communication record
-                normalized = self._normalize_communication_record(record, db_name)
-                if normalized:
-                    communications.append(normalized)
+        # Calculate summary stats
+        total_dbs = len(databases)
+        encrypted_dbs = len([db for db in databases if db.get('encryption', {}).get('is_encrypted')])
+        analyzed_dbs = len([db for db in databases if db['status'] == 'analyzed'])
+        total_records = sum(data['record_count'] for data in extracted_data.values())
+        total_findings = len(intelligence_findings)
         
-        return communications
-    
-    def _normalize_communication_record(self, record: Dict[str, Any], source: str) -> Optional[Dict[str, Any]]:
-        """Normalize a communication record to standard format"""
-        # This would need to be enhanced based on different database schemas
-        base_record = {
-            'source': source,
-            'timestamp': record.get('timestamp', ''),
-            'content': record.get('text', ''),
-            'contact': record.get('contact', 'Unknown'),
-            'direction': record.get('direction', 'Unknown'),
-            'type': 'MESSAGE'  # Default, could be CALL, etc.
+        # Risk assessment
+        high_risk_findings = [f for f in intelligence_findings if f.get('risk_score', 0) >= 7]
+        medium_risk_findings = [f for f in intelligence_findings if 4 <= f.get('risk_score', 0) < 7]
+        
+        report = {
+            'case_info': {
+                'case_name': self.case_name,
+                'examiner': self.examiner_name,
+                'analysis_date': datetime.datetime.now().isoformat(),
+                'tool_version': 'Simplified Forensic Intelligence Suite v1.0'
+            },
+            'summary': {
+                'databases_found': total_dbs,
+                'databases_encrypted': encrypted_dbs,
+                'databases_analyzed': analyzed_dbs,
+                'records_extracted': total_records,
+                'intelligence_findings': total_findings,
+                'high_risk_findings': len(high_risk_findings),
+                'medium_risk_findings': len(medium_risk_findings)
+            },
+            'databases': databases,
+            'extracted_data_summary': {
+                name: {'record_count': data['record_count'], 'source': data['source_path']}
+                for name, data in extracted_data.items()
+            },
+            'intelligence_findings': intelligence_findings,
+            'recommendations': self._generate_recommendations(intelligence_findings)
         }
         
-        # Only return if we have meaningful content
-        if base_record['content'] or base_record['contact'] != 'Unknown':
-            return base_record
+        # Print summary
+        print(f"\n📊 ANALYSIS SUMMARY")
+        print(f"   Databases Found: {total_dbs}")
+        print(f"   Databases Analyzed: {analyzed_dbs}")
+        print(f"   Encrypted Databases: {encrypted_dbs}")
+        print(f"   Records Extracted: {total_records}")
+        print(f"   Intelligence Findings: {total_findings}")
+        if high_risk_findings:
+            print(f"   ⚠️  High Risk Findings: {len(high_risk_findings)}")
         
-        return None
-    
-    def _generate_final_report(self) -> Dict[str, Any]:
-        """Generate comprehensive final report"""
-        self.logger.log_action("REPORT_START", "Generating final report")
-        
-        report = self.report_generator.generate_comprehensive_report(
-            extracted_data=self.extracted_data,
-            intelligence_findings=self.intelligence_findings,
-            analysis_metadata={
-                'databases_analyzed': len(self.extracted_data),
-                'total_records': sum(data['record_count'] for data in self.extracted_data.values()),
-                'modules_run': len(set(f.get('module', 'unknown') for f in self.intelligence_findings)),
-                'analysis_duration': self.logger.get_analysis_duration()
-            }
-        )
-        
-        self.logger.log_action("REPORT_COMPLETE", "Final report generated")
         return report
     
-    def _save_generated_config(self, db_name: str, config: Dict[str, Any]):
-        """Save auto-generated configuration for future use"""
-        config_file = Path("forensic_configs") / "auto_generated" / f"{db_name}_config.json"
-        config_file.parent.mkdir(exist_ok=True)
+    def _generate_recommendations(self, findings: List[Dict[str, Any]]) -> List[str]:
+        """Generate simple recommendations based on findings"""
+        recommendations = []
         
-        with open(config_file, 'w') as f:
-            json.dump({db_name: config}, f, indent=2)
+        if not findings:
+            recommendations.append("No intelligence indicators detected in sample data")
+            recommendations.append("Consider running full forensic analysis with larger dataset")
+            return recommendations
         
-        self.logger.log_action("CONFIG_SAVED", f"Auto-generated config saved: {config_file}")
+        high_risk_count = len([f for f in findings if f.get('risk_score', 0) >= 7])
+        if high_risk_count > 0:
+            recommendations.append(f"URGENT: {high_risk_count} high-risk indicators require immediate investigation")
+        
+        # Module-specific recommendations
+        modules_with_findings = set(f.get('module', 'Unknown') for f in findings)
+        
+        if 'Narcotics Intelligence' in modules_with_findings:
+            recommendations.append("Drug-related activity detected - consider DEA coordination")
+        
+        if 'Financial Fraud Intelligence' in modules_with_findings:
+            recommendations.append("Financial fraud indicators - review transaction records")
+        
+        recommendations.append("Expand analysis to full dataset for comprehensive results")
+        
+        return recommendations
+    
+    def save_report(self, report: Dict[str, Any], output_path: str = None):
+        """Save report to JSON file"""
+        if output_path is None:
+            timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
+            output_path = f"forensic_report_{self.case_name}_{timestamp}.json"
+        
+        with open(output_path, 'w') as f:
+            json.dump(report, f, indent=2, default=str)
+        
+        print(f"\n💾 Report saved to: {output_path}")
+        return output_path
 
-# Command-line interface
 def main():
-    """Main command-line interface"""
-    import argparse
+    """Main function for command-line usage"""
+    print("🔍 GHOST - Golden Hour Operations and Strategic Threat Assessment")
+    print("=" * 60)
     
-    parser = argparse.ArgumentParser(description="Modular Forensic Intelligence Suite")
+    if len(sys.argv) < 4:
+        print("Usage: python forensic_suite_simple.py <extraction_path> <case_name> <examiner_name>")
+        print("\nExample:")
+        print("  python forensic_suite_simple.py /path/to/extraction 'Case-2024-001' 'Detective Smith'")
+        sys.exit(1)
     
-    # Analysis mode
-    subparsers = parser.add_subparsers(dest='command', help='Available commands')
-    
-    # Analyze command
-    analyze_parser = subparsers.add_parser('analyze', help='Run forensic analysis')
-    analyze_parser.add_argument('extraction_path', help='Path to forensic extraction')
-    analyze_parser.add_argument('case_name', help='Case name/identifier')
-    analyze_parser.add_argument('examiner_name', help='Examiner name')
-    analyze_parser.add_argument('--modules', help='Comma-separated list of intelligence modules')
-    analyze_parser.add_argument('--config-dir', default='forensic_configs', help='Configuration directory')
-    
-    # Config command
-    config_parser = subparsers.add_parser('config', help='Configuration management')
-    config_parser.add_argument('action', choices=[
-        'init', 'inspect', 'add-keywords', 'update-schema', 
-        'export', 'import', 'list', 'validate'
-    ])
-    config_parser.add_argument('--config-dir', default='forensic_configs', help='Configuration directory')
-    config_parser.add_argument('--db-path', help='Database path for inspection')
-    config_parser.add_argument('--module', help='Module name')
-    config_parser.add_argument('--category', help='Keyword category')
-    config_parser.add_argument('--keywords', help='Comma-separated keywords')
-    config_parser.add_argument('--file', help='File path for import/export')
-    
-    # Module command
-    module_parser = subparsers.add_parser('module', help='Module management')
-    module_parser.add_argument('action', choices=['list', 'info', 'test'])
-    module_parser.add_argument('--name', help='Module name')
-    module_parser.add_argument('--config-dir', default='forensic_configs', help='Configuration directory')
-    
-    args = parser.parse_args()
-    
-    if not args.command:
-        parser.print_help()
-        return
+    extraction_path = sys.argv[1]
+    case_name = sys.argv[2]
+    examiner_name = sys.argv[3]
     
     try:
-        if args.command == 'analyze':
-            # Run analysis
-            selected_modules = None
-            if args.modules:
-                selected_modules = [m.strip() for m in args.modules.split(',')]
-            
-            suite = ForensicIntelligenceSuite(
-                args.case_name, 
-                args.examiner_name, 
-                args.config_dir
-            )
-            
-            report = suite.analyze_extraction(args.extraction_path, selected_modules)
-            
-            print(f"\n✅ Analysis complete for case: {args.case_name}")
-            print(f"📊 Report generated with {len(report.get('intelligence_findings', []))} findings")
-            
-        elif args.command == 'config':
-            # Configuration management
-            from config_cli import handle_config_command
-            handle_config_command(args)
-            
-        elif args.command == 'module':
-            # Module management
-            from module_cli import handle_module_command
-            handle_module_command(args)
-            
+        # Initialize suite
+        suite = SimplifiedForensicSuite(case_name, examiner_name)
+        
+        # Run analysis
+        report = suite.analyze_path(extraction_path)
+        
+        # Save report
+        output_file = suite.save_report(report)
+        
+        print(f"\n🎯 Analysis complete! Key findings:")
+        summary = report['summary']
+        print(f"   • {summary['databases_found']} databases discovered")
+        print(f"   • {summary['intelligence_findings']} intelligence indicators found")
+        
+        if summary['high_risk_findings'] > 0:
+            print(f"   • ⚠️  {summary['high_risk_findings']} HIGH RISK findings!")
+        
+        print(f"\n📄 Full report saved to: {output_file}")
+        
     except Exception as e:
-        print(f"❌ Error: {str(e)}")
+        print(f"\n❌ Analysis failed: {e}")
         sys.exit(1)
 
+def test_suite():
+    """Test function to verify the suite works"""
+    print("🧪 Testing Forensic Intelligence Suite...")
+    
+    # Create test directory structure
+    test_dir = Path("test_extraction")
+    test_dir.mkdir(exist_ok=True)
+    
+    # Create a simple test database
+    test_db = test_dir / "test_messages.db"
+    
+    import sqlite3
+    conn = sqlite3.connect(str(test_db))
+    cursor = conn.cursor()
+    
+    # Create test table
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS message (
+            ROWID INTEGER PRIMARY KEY,
+            date INTEGER,
+            text TEXT,
+            is_from_me INTEGER,
+            service TEXT,
+            handle_id INTEGER
+        )
+    """)
+    
+    # Insert test data
+    test_messages = [
+        (1640995200, "Hey, you got that stuff?", 0, "SMS", 1),
+        (1640995260, "Yeah, meet me at the usual spot", 1, "SMS", 1),
+        (1640995320, "Bring $200 for the gram", 0, "SMS", 1),
+        (1640995380, "On my way", 1, "SMS", 1),
+    ]
+    
+    cursor.executemany(
+        "INSERT INTO message (date, text, is_from_me, service, handle_id) VALUES (?, ?, ?, ?, ?)",
+        test_messages
+    )
+    
+    conn.commit()
+    conn.close()
+    
+    print(f"✅ Created test database: {test_db}")
+    
+    # Run analysis
+    try:
+        suite = SimplifiedForensicSuite("TEST-001", "Test Examiner")
+        report = suite.analyze_path(str(test_dir))
+        suite.save_report(report, "test_report.json")
+        
+        print("✅ Test completed successfully!")
+        print("📄 Test report saved as: test_report.json")
+        
+        # Cleanup
+        test_db.unlink()
+        test_dir.rmdir()
+        
+    except Exception as e:
+        print(f"❌ Test failed: {e}")
+        # Cleanup on failure
+        if test_db.exists():
+            test_db.unlink()
+        if test_dir.exists():
+            test_dir.rmdir()
+        raise
+
 if __name__ == "__main__":
-    main()
+    if len(sys.argv) > 1 and sys.argv[1] == "--test":
+        test_suite()
+    else:
+        main()
