@@ -1,241 +1,263 @@
 #!/usr/bin/env python3
 """
-Setup Script for GHOST Forensic Intelligence Suite
-Creates directory structure and initializes configurations
+GHOST - Golden Hour Operations and Strategic Threat Assessment
+Startup Script for Forensic Intelligence Suite
 """
 
+import sys
 import os
-import json
 from pathlib import Path
+import subprocess
 
-def create_directory_structure():
-    """Create the required directory structure"""
-    print("📁 Creating directory structure...")
-    
-    directories = [
-        "modules",
-        "forensic_configs", 
-        "forensic_configs/auto_generated",
-        "logs",
-        "reports"
-    ]
-    
-    for directory in directories:
-        Path(directory).mkdir(exist_ok=True)
-        print(f"   ✅ Created: {directory}")
-
-def create_module_init():
-    """Create __init__.py for modules directory"""
-    modules_init = Path("modules") / "__init__.py"
-    if not modules_init.exists():
-        modules_init.write_text("# Forensic Intelligence Modules\n")
-        print("   ✅ Created: modules/__init__.py")
-
-def check_dependencies():
-    """Check if required Python modules are available"""
-    print("\n🔍 Checking dependencies...")
-    
-    required_modules = [
-        "sqlite3",
-        "json", 
-        "pathlib",
-        "datetime",
-        "hashlib",
-        "logging",
-        "re",
-        "collections"
-    ]
-    
-    missing = []
-    for module in required_modules:
-        try:
-            __import__(module)
-            print(f"   ✅ {module}")
-        except ImportError:
-            print(f"   ❌ {module} (missing)")
-            missing.append(module)
-    
-    if missing:
-        print(f"\n⚠️  Missing modules: {', '.join(missing)}")
-        print("   These are usually part of Python standard library.")
+def check_python_version():
+    """Check if Python version is compatible"""
+    if sys.version_info < (3, 6):
+        print("❌ Python 3.6 or higher is required")
+        print(f"   Current version: {sys.version}")
         return False
-    else:
-        print("\n✅ All dependencies satisfied!")
-        return True
+    print(f"✅ Python version: {sys.version.split()[0]}")
+    return True
 
-def create_sample_config():
-    """Create sample configuration files"""
-    print("\n📝 Creating sample configurations...")
+def check_directory_structure():
+    """Check if required directories exist"""
+    required_dirs = ["modules", "forensic_configs"]
+    missing_dirs = []
     
-    # Sample data paths
-    data_paths = {
-        "messages": {
-            "primary": "var/mobile/Library/SMS/sms.db",
-            "backup": "var/mobile/Library/SMS/sms.backup.db", 
-            "description": "iOS Messages database"
-        },
-        "call_history": {
-            "primary": "var/mobile/Library/CallHistoryDB/CallHistory.storedata",
-            "backup": "var/mobile/Library/CallHistory/CallHistory.storedata",
-            "description": "iOS Call History database"
-        }
-    }
+    for directory in required_dirs:
+        if not Path(directory).exists():
+            missing_dirs.append(directory)
+        else:
+            print(f"✅ Directory exists: {directory}")
     
-    # Sample keywords
-    keywords = {
-        "narcotics": {
-            "street_names": [
-                "molly", "mdma", "ecstasy", "snow", "white", "powder",
-                "ice", "crystal", "meth", "glass", "weed", "bud"
-            ],
-            "transaction_terms": [
-                "gram", "ounce", "oz", "pound", "front", "dealer"
-            ]
-        },
-        "financial_fraud": {
-            "scam_terms": [
-                "western union", "gift card", "emergency", "stranded"
-            ]
-        }
-    }
-    
-    # Sample schemas
-    schemas = {
-        "messages": {
-            "table": "message",
-            "columns": {
-                "id": "ROWID",
-                "timestamp": "date", 
-                "text": "text",
-                "is_from_me": "is_from_me"
-            },
-            "timestamp_conversion": "datetime(date/1000000000 + 978307200, 'unixepoch')"
-        }
-    }
-    
-    # Sample modules config
-    modules = {
-        "narcotics": {
-            "enabled": True,
-            "risk_weights": {"high_risk_drugs": 4, "quantity_indicators": 3}
-        },
-        "financial_fraud": {
-            "enabled": True, 
-            "risk_weights": {"gift_cards": 4, "urgency": 2}
-        }
-    }
-    
-    # Write config files
-    configs = [
-        ("forensic_configs/data_paths.json", data_paths),
-        ("forensic_configs/keywords.json", keywords),
-        ("forensic_configs/database_schemas.json", schemas),
-        ("forensic_configs/intelligence_modules.json", modules)
-    ]
-    
-    for filename, config in configs:
-        with open(filename, 'w') as f:
-            json.dump(config, f, indent=2)
-        print(f"   ✅ Created: {filename}")
-
-def create_readme():
-    """Create a README file with usage instructions"""
-    readme_content = """# GHOST - Forensic Intelligence Suite
-
-## Quick Start
-
-1. **Test the installation:**
-   ```bash
-   python main_forensic_suite.py --test
-   ```
-
-2. **Analyze an extraction:**
-   ```bash
-   python main_forensic_suite.py /path/to/extraction "Case-2024-001" "Detective Smith"
-   ```
-
-3. **Run the GUI (if available):**
-   ```bash
-   python forensic_gui_app.py
-   ```
-
-## Directory Structure
-
-- `modules/` - Core forensic analysis modules
-- `forensic_configs/` - Configuration files (keywords, schemas, etc.)
-- `logs/` - Analysis logs and chain of custody
-- `reports/` - Generated reports
-
-## Key Features
-
-- 🔍 **Database Discovery** - Automatically finds and analyzes SQLite databases
-- 🔐 **Encryption Detection** - Identifies encrypted databases
-- 🧠 **Intelligence Analysis** - Crime-specific analysis modules
-- 📊 **Adaptive Processing** - Resource-aware analysis
-- 📋 **Chain of Custody** - Forensic logging and audit trails
-
-## Configuration
-
-Edit files in `forensic_configs/` to customize:
-- Database schemas (`database_schemas.json`)
-- Intelligence keywords (`keywords.json`) 
-- Module settings (`intelligence_modules.json`)
-- Data source paths (`data_paths.json`)
-
-## Troubleshooting
-
-If you encounter errors:
-1. Check that all modules are in the `modules/` directory
-2. Verify configuration files in `forensic_configs/`
-3. Run with `--test` flag to validate setup
-4. Check logs in the `logs/` directory
-
-## Support
-
-This is the GHOST (Golden Hour Operations and Strategic Threat Assessment) suite
-for rapid forensic intelligence analysis during critical investigation phases.
-"""
-    
-    with open("README.md", 'w') as f:
-        f.write(readme_content)
-    print("   ✅ Created: README.md")
-
-def main():
-    """Main setup function"""
-    print("🚀 GHOST Forensic Intelligence Suite Setup")
-    print("=" * 50)
-    
-    # Create directories
-    create_directory_structure()
-    
-    # Create module init
-    create_module_init()
-    
-    # Check dependencies
-    if not check_dependencies():
-        print("\n❌ Setup incomplete due to missing dependencies")
+    if missing_dirs:
+        print(f"❌ Missing directories: {', '.join(missing_dirs)}")
+        print("   Run setup.py first to create directory structure")
         return False
-    
-    # Create configurations
-    create_sample_config()
-    
-    # Create README
-    create_readme()
-    
-    print("\n🎉 Setup complete!")
-    print("\n📋 Next steps:")
-    print("   1. Copy your fixed module files to the 'modules/' directory")
-    print("   2. Run: python main_forensic_suite.py --test")
-    print("   3. If test passes, analyze real extractions")
-    
-    print(f"\n📁 Files created:")
-    print(f"   • Directory structure in current folder")
-    print(f"   • Configuration files in forensic_configs/")
-    print(f"   • README.md with usage instructions")
     
     return True
 
+def check_modules():
+    """Check if required modules exist"""
+    required_modules = [
+        "config_manager.py",
+        "database_inspector.py", 
+        "encryption_detector.py",
+        "forensic_logger.py",
+        "data_extractor.py",
+        "intelligence_modules.py",
+        "pattern_analyzer.py"
+    ]
+    
+    modules_dir = Path("modules")
+    missing_modules = []
+    
+    for module in required_modules:
+        module_path = modules_dir / module
+        if not module_path.exists():
+            missing_modules.append(module)
+        else:
+            print(f"✅ Module exists: {module}")
+    
+    if missing_modules:
+        print(f"❌ Missing modules: {', '.join(missing_modules)}")
+        print("   Copy the fixed modules to the modules/ directory")
+        return False
+    
+    return True
+
+def check_configurations():
+    """Check if configuration files exist"""
+    required_configs = [
+        "data_paths.json",
+        "keywords.json",
+        "database_schemas.json", 
+        "intelligence_modules.json"
+    ]
+    
+    config_dir = Path("forensic_configs")
+    missing_configs = []
+    
+    for config in required_configs:
+        config_path = config_dir / config
+        if not config_path.exists():
+            missing_configs.append(config)
+        else:
+            print(f"✅ Config exists: {config}")
+    
+    if missing_configs:
+        print(f"❌ Missing configs: {', '.join(missing_configs)}")
+        print("   Run setup.py to create default configurations")
+        return False
+    
+    return True
+
+def test_imports():
+    """Test if all modules can be imported"""
+    print("\n🧪 Testing module imports...")
+    
+    # Add modules to path
+    sys.path.insert(0, str(Path("modules")))
+    
+    modules_to_test = [
+        "config_manager",
+        "database_inspector",
+        "encryption_detector", 
+        "forensic_logger",
+        "data_extractor",
+        "intelligence_modules",
+        "pattern_analyzer"
+    ]
+    
+    failed_imports = []
+    
+    for module_name in modules_to_test:
+        try:
+            __import__(module_name)
+            print(f"✅ Import successful: {module_name}")
+        except Exception as e:
+            print(f"❌ Import failed: {module_name} - {e}")
+            failed_imports.append(module_name)
+    
+    if failed_imports:
+        print(f"\n❌ Failed to import: {', '.join(failed_imports)}")
+        return False
+    
+    print("✅ All modules imported successfully")
+    return True
+
+def run_test():
+    """Run the built-in test"""
+    print("\n🧪 Running built-in test...")
+    
+    try:
+        if Path("main_forensic_suite.py").exists():
+            result = subprocess.run([sys.executable, "main_forensic_suite.py", "--test"], 
+                                  capture_output=True, text=True, timeout=60)
+            
+            if result.returncode == 0:
+                print("✅ Test completed successfully")
+                print("Test output:")
+                print(result.stdout)
+                return True
+            else:
+                print("❌ Test failed")
+                print("Error output:")
+                print(result.stderr)
+                return False
+        else:
+            print("❌ main_forensic_suite.py not found")
+            return False
+            
+    except subprocess.TimeoutExpired:
+        print("❌ Test timed out after 60 seconds")
+        return False
+    except Exception as e:
+        print(f"❌ Test error: {e}")
+        return False
+
+def show_usage():
+    """Show usage instructions"""
+    print("""
+🎯 GHOST is ready! Here's how to use it:
+
+COMMAND LINE INTERFACE:
+----------------------
+# Analyze an extraction
+python main_forensic_suite.py /path/to/extraction "Case-2024-001" "Detective Smith"
+
+# Run built-in test
+python main_forensic_suite.py --test
+
+GRAPHICAL INTERFACE:
+-------------------
+# Launch GUI application
+python forensic_gui_app.py
+
+EXAMPLE USAGE:
+-------------
+# Analyze iOS extraction
+python main_forensic_suite.py /Extractions/iPhone_John_Doe "Case-2024-001" "Det. Johnson"
+
+# Analyze Android extraction  
+python main_forensic_suite.py /Extractions/Samsung_Galaxy "Case-2024-002" "Det. Smith"
+
+CONFIGURATION:
+-------------
+# Edit keyword databases
+nano forensic_configs/keywords.json
+
+# Update database schemas
+nano forensic_configs/database_schemas.json
+
+# View analysis logs
+ls logs/
+
+# View generated reports
+ls reports/
+
+For more information, see README.md
+""")
+
+def main():
+    """Main startup function"""
+    print("🚀 GHOST - Golden Hour Operations and Strategic Threat Assessment")
+    print("=" * 65)
+    print("Forensic Intelligence Suite Startup Check")
+    print()
+    
+    checks = [
+        ("Python Version", check_python_version),
+        ("Directory Structure", check_directory_structure), 
+        ("Required Modules", check_modules),
+        ("Configuration Files", check_configurations),
+        ("Module Imports", test_imports)
+    ]
+    
+    all_passed = True
+    
+    for check_name, check_func in checks:
+        print(f"\n🔍 Checking {check_name}...")
+        if not check_func():
+            all_passed = False
+            print(f"❌ {check_name} check failed")
+        else:
+            print(f"✅ {check_name} check passed")
+    
+    if not all_passed:
+        print(f"\n❌ Startup checks failed!")
+        print("   Fix the issues above before running GHOST")
+        print("\n🔧 Quick fixes:")
+        print("   1. Run: python setup.py")
+        print("   2. Copy fixed modules to modules/ directory")
+        print("   3. Run this script again")
+        return False
+    
+    print(f"\n✅ All startup checks passed!")
+    
+    # Ask if user wants to run test
+    try:
+        run_test_choice = input("\n🧪 Run built-in test? (y/N): ").lower().strip()
+        if run_test_choice in ['y', 'yes']:
+            if run_test():
+                print("\n🎉 GHOST is fully operational!")
+            else:
+                print("\n⚠️  Test failed but basic checks passed")
+                print("   GHOST should still work for basic analysis")
+        else:
+            print("\n✅ Skipping test - GHOST appears ready")
+    except KeyboardInterrupt:
+        print("\n\n✅ Setup check complete")
+    
+    show_usage()
+    return True
+
 if __name__ == "__main__":
-    success = main()
-    if not success:
-        exit(1)
+    try:
+        success = main()
+        sys.exit(0 if success else 1)
+    except KeyboardInterrupt:
+        print("\n\n👋 Startup check cancelled")
+        sys.exit(1)
+    except Exception as e:
+        print(f"\n❌ Startup error: {e}")
+        sys.exit(1)
