@@ -2,6 +2,7 @@
 """
 GHOST - Golden Hour Operations and Strategic Threat Assessment
 Startup Script for Forensic Intelligence Suite
+Multiple Analysis Options
 """
 
 import sys
@@ -9,255 +10,172 @@ import os
 from pathlib import Path
 import subprocess
 
-def check_python_version():
-    """Check if Python version is compatible"""
-    if sys.version_info < (3, 6):
-        print("❌ Python 3.6 or higher is required")
-        print(f"   Current version: {sys.version}")
-        return False
-    print(f"✅ Python version: {sys.version.split()[0]}")
-    return True
+def show_ghost_menu():
+    """Show GHOST analysis options"""
+    print("🔍 GHOST - Golden Hour Operations and Strategic Threat Assessment")
+    print("=" * 65)
+    print()
+    print("Available Analysis Tools:")
+    print()
+    print("1. 📋 EVIDENCE ANALYSIS (Recommended)")
+    print("   Focused forensic analysis for investigators")
+    print("   → python ghost_forensic_suite.py <extraction> <case> <examiner>")
+    print()
+    print("2. 🖥️  GUI INTERFACE")
+    print("   Visual interface for interactive analysis")
+    print("   → python forensic_gui_app.py")
+    print()
+    print("3. ⚡ THREADED ANALYSIS")
+    print("   High-performance multi-threaded processing")
+    print("   → python threaded_forensic_suite.py <extraction> <case> <examiner>")
+    print()
+    print("4. 🧪 SYSTEM TEST")
+    print("   Verify GHOST installation and functionality")
+    print("   → python ghost_forensic_suite.py --test")
+    print()
 
-def check_directory_structure():
-    """Check if required directories exist"""
-    required_dirs = ["modules", "forensic_configs"]
-    missing_dirs = []
+def check_files():
+    """Check which GHOST files are available"""
+    files_status = {}
     
-    for directory in required_dirs:
-        if not Path(directory).exists():
-            missing_dirs.append(directory)
-        else:
-            print(f"✅ Directory exists: {directory}")
-    
-    if missing_dirs:
-        print(f"❌ Missing directories: {', '.join(missing_dirs)}")
-        print("   Run setup.py first to create directory structure")
-        return False
-    
-    return True
-
-def check_modules():
-    """Check if required modules exist"""
-    required_modules = [
-        "config_manager.py",
-        "database_inspector.py", 
-        "encryption_detector.py",
-        "forensic_logger.py",
-        "data_extractor.py",
-        "intelligence_modules.py",
-        "pattern_analyzer.py"
+    ghost_files = [
+        ("ghost_forensic_suite.py", "Evidence Analysis Tool"),
+        ("forensic_gui_app.py", "GUI Interface"),
+        ("threaded_forensic_suite.py", "Threaded Analysis"),
+        ("main_forensic_suite.py", "Original Analysis Tool")
     ]
     
-    modules_dir = Path("modules")
-    missing_modules = []
+    print("📁 Checking GHOST Components...")
     
-    for module in required_modules:
-        module_path = modules_dir / module
-        if not module_path.exists():
-            missing_modules.append(module)
+    for filename, description in ghost_files:
+        if Path(filename).exists():
+            files_status[filename] = True
+            print(f"   ✅ {description}: {filename}")
         else:
-            print(f"✅ Module exists: {module}")
+            files_status[filename] = False
+            print(f"   ❌ {description}: {filename} (missing)")
     
-    if missing_modules:
-        print(f"❌ Missing modules: {', '.join(missing_modules)}")
-        print("   Copy the fixed modules to the modules/ directory")
-        return False
-    
-    return True
+    return files_status
 
-def check_configurations():
-    """Check if configuration files exist"""
-    required_configs = [
-        "data_paths.json",
-        "keywords.json",
-        "database_schemas.json", 
-        "intelligence_modules.json"
-    ]
+def run_quick_test():
+    """Run a quick test of the evidence analysis tool"""
+    print("\n🧪 Running Quick Test...")
     
-    config_dir = Path("forensic_configs")
-    missing_configs = []
-    
-    for config in required_configs:
-        config_path = config_dir / config
-        if not config_path.exists():
-            missing_configs.append(config)
-        else:
-            print(f"✅ Config exists: {config}")
-    
-    if missing_configs:
-        print(f"❌ Missing configs: {', '.join(missing_configs)}")
-        print("   Run setup.py to create default configurations")
-        return False
-    
-    return True
-
-def test_imports():
-    """Test if all modules can be imported"""
-    print("\n🧪 Testing module imports...")
-    
-    # Add modules to path
-    sys.path.insert(0, str(Path("modules")))
-    
-    modules_to_test = [
-        "config_manager",
-        "database_inspector",
-        "encryption_detector", 
-        "forensic_logger",
-        "data_extractor",
-        "intelligence_modules",
-        "pattern_analyzer"
-    ]
-    
-    failed_imports = []
-    
-    for module_name in modules_to_test:
+    # Check if focused evidence tool exists
+    if Path("ghost_forensic_suite.py").exists():
         try:
-            __import__(module_name)
-            print(f"✅ Import successful: {module_name}")
-        except Exception as e:
-            print(f"❌ Import failed: {module_name} - {e}")
-            failed_imports.append(module_name)
-    
-    if failed_imports:
-        print(f"\n❌ Failed to import: {', '.join(failed_imports)}")
-        return False
-    
-    print("✅ All modules imported successfully")
-    return True
-
-def run_test():
-    """Run the built-in test"""
-    print("\n🧪 Running built-in test...")
-    
-    try:
-        if Path("main_forensic_suite.py").exists():
-            result = subprocess.run([sys.executable, "main_forensic_suite.py", "--test"], 
-                                  capture_output=True, text=True, timeout=60)
+            result = subprocess.run([
+                sys.executable, "ghost_forensic_suite.py", 
+                "test_data", "QuickTest", "TestUser"
+            ], capture_output=True, text=True, timeout=30)
             
-            if result.returncode == 0:
-                print("✅ Test completed successfully")
-                print("Test output:")
-                print(result.stdout)
+            if "GHOST - Golden Hour Operations" in result.stdout:
+                print("✅ Evidence analysis tool responding correctly")
                 return True
             else:
-                print("❌ Test failed")
-                print("Error output:")
-                print(result.stderr)
+                print("❌ Evidence analysis tool not responding properly")
                 return False
-        else:
-            print("❌ main_forensic_suite.py not found")
+                
+        except subprocess.TimeoutExpired:
+            print("❌ Test timed out")
             return False
-            
-    except subprocess.TimeoutExpired:
-        print("❌ Test timed out after 60 seconds")
+        except Exception as e:
+            print(f"❌ Test error: {e}")
+            return False
+    else:
+        print("❌ ghost_forensic_suite.py not found")
         return False
-    except Exception as e:
-        print(f"❌ Test error: {e}")
-        return False
 
-def show_usage():
-    """Show usage instructions"""
-    print("""
-🎯 GHOST is ready! Here's how to use it:
+def show_usage_examples():
+    """Show practical usage examples"""
+    print("\n📖 USAGE EXAMPLES:")
+    print()
+    print("🔍 ANALYZE iPhone EXTRACTION (ZIP):")
+    print('   python ghost_forensic_suite.py "C:\\Cases\\iPhone_Suspect.zip" "Case-2024-001" "Det. Smith"')
+    print()
+    print("🔍 ANALYZE Android EXTRACTION (Directory):")
+    print('   python ghost_forensic_suite.py "C:\\Cases\\Android_Extract\\" "Case-2024-002" "Det. Jones"')
+    print()
+    print("🖥️  LAUNCH GUI INTERFACE:")
+    print("   python forensic_gui_app.py")
+    print()
+    print("🧪 RUN SYSTEM TEST:")
+    print("   python ghost_forensic_suite.py --test")
+    print()
 
-COMMAND LINE INTERFACE:
-----------------------
-# Analyze an extraction
-python main_forensic_suite.py /path/to/extraction "Case-2024-001" "Detective Smith"
-
-# Run built-in test
-python main_forensic_suite.py --test
-
-GRAPHICAL INTERFACE:
--------------------
-# Launch GUI application
-python forensic_gui_app.py
-
-EXAMPLE USAGE:
--------------
-# Analyze iOS extraction
-python main_forensic_suite.py /Extractions/iPhone_John_Doe "Case-2024-001" "Det. Johnson"
-
-# Analyze Android extraction  
-python main_forensic_suite.py /Extractions/Samsung_Galaxy "Case-2024-002" "Det. Smith"
-
-CONFIGURATION:
--------------
-# Edit keyword databases
-nano forensic_configs/keywords.json
-
-# Update database schemas
-nano forensic_configs/database_schemas.json
-
-# View analysis logs
-ls logs/
-
-# View generated reports
-ls reports/
-
-For more information, see README.md
-""")
+def show_what_you_get():
+    """Show what GHOST provides"""
+    print("🎯 WHAT GHOST PROVIDES:")
+    print()
+    print("📱 COMMUNICATION INTELLIGENCE:")
+    print("   • SMS/Text message analysis with keyword detection")
+    print("   • Call log patterns and frequency analysis")
+    print("   • Contact relationship mapping")
+    print()
+    print("📷 MULTIMEDIA EVIDENCE:")
+    print("   • Photo and video inventory with metadata")
+    print("   • Timeline analysis of media creation")
+    print()
+    print("🗺️  LOCATION INTELLIGENCE:")
+    print("   • GPS tracking and movement patterns")
+    print("   • Frequent location identification")
+    print()
+    print("📱 APP DATA ANALYSIS:")
+    print("   • WhatsApp, Snapchat, Telegram data extraction")
+    print("   • Social media app analysis")
+    print("   • Messaging platform intelligence")
+    print()
+    print("📊 INVESTIGATIVE OUTPUTS:")
+    print("   • Executive summary with priority assessment")
+    print("   • Actionable intelligence leads")
+    print("   • Data export options (CSV, JSON)")
+    print("   • Professional forensic reports")
+    print()
 
 def main():
-    """Main startup function"""
-    print("🚀 GHOST - Golden Hour Operations and Strategic Threat Assessment")
-    print("=" * 65)
-    print("Forensic Intelligence Suite Startup Check")
+    """Main function"""
+    if len(sys.argv) > 1:
+        if sys.argv[1] == "--help":
+            show_ghost_menu()
+            show_usage_examples()
+            show_what_you_get()
+            return
+        elif sys.argv[1] == "--test":
+            check_files()
+            run_quick_test()
+            return
+        elif sys.argv[1] == "--menu":
+            show_ghost_menu()
+            return
+    
+    # Default behavior - show menu and check system
+    show_ghost_menu()
+    
     print()
+    files_status = check_files()
     
-    checks = [
-        ("Python Version", check_python_version),
-        ("Directory Structure", check_directory_structure), 
-        ("Required Modules", check_modules),
-        ("Configuration Files", check_configurations),
-        ("Module Imports", test_imports)
-    ]
+    # Recommend next steps based on what's available
+    print("\n🚀 RECOMMENDED NEXT STEPS:")
     
-    all_passed = True
+    if files_status.get("ghost_forensic_suite.py", False):
+        print("   1. Test the system:")
+        print("      python run_ghost.py --test")
+        print()
+        print("   2. Analyze real evidence:")
+        print('      python ghost_forensic_suite.py "path\\to\\extraction.zip" "CaseName" "ExaminerName"')
+        
+    elif files_status.get("forensic_gui_app.py", False):
+        print("   1. Launch GUI interface:")
+        print("      python forensic_gui_app.py")
+        
+    else:
+        print("   1. Set up GHOST components:")
+        print("      python setup.py")
+        print()
+        print("   2. Add the forensic analysis tools")
     
-    for check_name, check_func in checks:
-        print(f"\n🔍 Checking {check_name}...")
-        if not check_func():
-            all_passed = False
-            print(f"❌ {check_name} check failed")
-        else:
-            print(f"✅ {check_name} check passed")
-    
-    if not all_passed:
-        print(f"\n❌ Startup checks failed!")
-        print("   Fix the issues above before running GHOST")
-        print("\n🔧 Quick fixes:")
-        print("   1. Run: python setup.py")
-        print("   2. Copy fixed modules to modules/ directory")
-        print("   3. Run this script again")
-        return False
-    
-    print(f"\n✅ All startup checks passed!")
-    
-    # Ask if user wants to run test
-    try:
-        run_test_choice = input("\n🧪 Run built-in test? (y/N): ").lower().strip()
-        if run_test_choice in ['y', 'yes']:
-            if run_test():
-                print("\n🎉 GHOST is fully operational!")
-            else:
-                print("\n⚠️  Test failed but basic checks passed")
-                print("   GHOST should still work for basic analysis")
-        else:
-            print("\n✅ Skipping test - GHOST appears ready")
-    except KeyboardInterrupt:
-        print("\n\n✅ Setup check complete")
-    
-    show_usage()
-    return True
+    print()
+    print("💡 For detailed help: python run_ghost.py --help")
 
 if __name__ == "__main__":
-    try:
-        success = main()
-        sys.exit(0 if success else 1)
-    except KeyboardInterrupt:
-        print("\n\n👋 Startup check cancelled")
-        sys.exit(1)
-    except Exception as e:
-        print(f"\n❌ Startup error: {e}")
-        sys.exit(1)
+    main()
