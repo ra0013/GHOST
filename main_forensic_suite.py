@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Forensic Intelligence Suite - Working Main Module
-Simplified version with core functionality
+Simplified version with core functionality - Windows Compatible
 """
 
 import os
@@ -10,6 +10,12 @@ from pathlib import Path
 from typing import Dict, List, Any, Optional
 import json
 import datetime
+
+# Set UTF-8 encoding for Windows compatibility
+if sys.platform.startswith('win'):
+    import codecs
+    sys.stdout = codecs.getwriter('utf-8')(sys.stdout.buffer, 'strict')
+    sys.stderr = codecs.getwriter('utf-8')(sys.stderr.buffer, 'strict')
 
 # Add modules to path
 sys.path.insert(0, str(Path(__file__).parent / "modules"))
@@ -22,9 +28,9 @@ try:
     from intelligence_modules import IntelligenceModuleFactory
     from forensic_logger import ForensicLogger
     from data_extractor import DataExtractor
-    print("✅ All modules imported successfully")
+    print("[OK] All modules imported successfully")
 except ImportError as e:
-    print(f"❌ Error importing modules: {e}")
+    print(f"[ERROR] Error importing modules: {e}")
     print("Make sure all module files are in the 'modules' directory")
     sys.exit(1)
 
@@ -35,7 +41,7 @@ class SimplifiedForensicSuite:
         self.case_name = case_name
         self.examiner_name = examiner_name
         
-        print(f"🔍 Initializing Forensic Intelligence Suite")
+        print(f"[INFO] Initializing Forensic Intelligence Suite")
         print(f"   Case: {case_name}")
         print(f"   Examiner: {examiner_name}")
         
@@ -54,10 +60,10 @@ class SimplifiedForensicSuite:
                 self.logger
             )
             
-            print("✅ All components initialized successfully")
+            print("[OK] All components initialized successfully")
             
         except Exception as e:
-            print(f"❌ Error initializing components: {e}")
+            print(f"[ERROR] Error initializing components: {e}")
             raise
         
         # Results storage
@@ -70,29 +76,29 @@ class SimplifiedForensicSuite:
         if not extraction_path.exists():
             raise FileNotFoundError(f"Path not found: {extraction_path}")
         
-        print(f"\n🔍 Starting analysis of: {extraction_path}")
+        print(f"\n[INFO] Starting analysis of: {extraction_path}")
         
         # Step 1: Discover databases
-        print("\n📁 Step 1: Database Discovery")
+        print("\n[STEP 1] Database Discovery")
         databases = self._discover_databases(extraction_path)
         
         # Step 2: Analyze discovered databases
-        print("\n🔍 Step 2: Database Analysis")
+        print("\n[STEP 2] Database Analysis")
         analyzed_databases = self._analyze_databases(databases)
         
         # Step 3: Extract sample data
-        print("\n📊 Step 3: Data Extraction")
+        print("\n[STEP 3] Data Extraction")
         extracted_data = self._extract_sample_data(analyzed_databases)
         
         # Step 4: Run intelligence analysis (simplified)
-        print("\n🧠 Step 4: Intelligence Analysis")
+        print("\n[STEP 4] Intelligence Analysis")
         intelligence_findings = self._run_basic_intelligence(extracted_data)
         
         # Step 5: Generate report
-        print("\n📋 Step 5: Report Generation")
+        print("\n[STEP 5] Report Generation")
         report = self._generate_simple_report(databases, extracted_data, intelligence_findings)
         
-        print("\n✅ Analysis complete!")
+        print("\n[OK] Analysis complete!")
         return report
     
     def _discover_databases(self, extraction_path: Path) -> List[Dict[str, Any]]:
@@ -131,7 +137,7 @@ class SimplifiedForensicSuite:
             db_info['encryption'] = encryption_info
             
             if encryption_info['is_encrypted']:
-                print(f"     ⚠️  Encrypted database detected")
+                print(f"     [WARNING] Encrypted database detected")
                 db_info['status'] = 'encrypted'
             else:
                 # Inspect structure
@@ -141,10 +147,10 @@ class SimplifiedForensicSuite:
                     db_info['status'] = 'analyzed'
                     
                     table_count = inspection.get('table_count', 0)
-                    print(f"     ✅ {table_count} tables found")
+                    print(f"     [OK] {table_count} tables found")
                     
                 except Exception as e:
-                    print(f"     ❌ Error: {e}")
+                    print(f"     [ERROR] Error: {e}")
                     db_info['status'] = 'error'
                     db_info['error'] = str(e)
             
@@ -185,10 +191,10 @@ class SimplifiedForensicSuite:
                         'record_count': len(db_data),
                         'source_path': str(db_path)
                     }
-                    print(f"     ✅ {len(db_data)} sample records extracted")
+                    print(f"     [OK] {len(db_data)} sample records extracted")
                 
             except Exception as e:
-                print(f"     ❌ Extraction error: {e}")
+                print(f"     [ERROR] Extraction error: {e}")
         
         return extracted_data
     
@@ -227,7 +233,7 @@ class SimplifiedForensicSuite:
                     findings.extend(module_findings)
                     print(f"     {module_name}: {len(module_findings)} indicators")
             except Exception as e:
-                print(f"     ❌ {module_name} error: {e}")
+                print(f"     [ERROR] {module_name} error: {e}")
         
         return findings
     
@@ -273,14 +279,14 @@ class SimplifiedForensicSuite:
         }
         
         # Print summary
-        print(f"\n📊 ANALYSIS SUMMARY")
+        print(f"\n[SUMMARY] ANALYSIS RESULTS")
         print(f"   Databases Found: {total_dbs}")
         print(f"   Databases Analyzed: {analyzed_dbs}")
         print(f"   Encrypted Databases: {encrypted_dbs}")
         print(f"   Records Extracted: {total_records}")
         print(f"   Intelligence Findings: {total_findings}")
         if high_risk_findings:
-            print(f"   ⚠️  High Risk Findings: {len(high_risk_findings)}")
+            print(f"   [WARNING] High Risk Findings: {len(high_risk_findings)}")
         
         return report
     
@@ -319,18 +325,18 @@ class SimplifiedForensicSuite:
         with open(output_path, 'w') as f:
             json.dump(report, f, indent=2, default=str)
         
-        print(f"\n💾 Report saved to: {output_path}")
+        print(f"\n[OK] Report saved to: {output_path}")
         return output_path
 
 def main():
     """Main function for command-line usage"""
-    print("🔍 GHOST - Golden Hour Operations and Strategic Threat Assessment")
+    print("[INFO] GHOST - Golden Hour Operations and Strategic Threat Assessment")
     print("=" * 60)
     
     if len(sys.argv) < 4:
-        print("Usage: python forensic_suite_simple.py <extraction_path> <case_name> <examiner_name>")
+        print("Usage: python main_forensic_suite.py <extraction_path> <case_name> <examiner_name>")
         print("\nExample:")
-        print("  python forensic_suite_simple.py /path/to/extraction 'Case-2024-001' 'Detective Smith'")
+        print("  python main_forensic_suite.py /path/to/extraction 'Case-2024-001' 'Detective Smith'")
         sys.exit(1)
     
     extraction_path = sys.argv[1]
@@ -347,23 +353,23 @@ def main():
         # Save report
         output_file = suite.save_report(report)
         
-        print(f"\n🎯 Analysis complete! Key findings:")
+        print(f"\n[SUCCESS] Analysis complete! Key findings:")
         summary = report['summary']
         print(f"   • {summary['databases_found']} databases discovered")
         print(f"   • {summary['intelligence_findings']} intelligence indicators found")
         
         if summary['high_risk_findings'] > 0:
-            print(f"   • ⚠️  {summary['high_risk_findings']} HIGH RISK findings!")
+            print(f"   • [WARNING] {summary['high_risk_findings']} HIGH RISK findings!")
         
-        print(f"\n📄 Full report saved to: {output_file}")
+        print(f"\n[INFO] Full report saved to: {output_file}")
         
     except Exception as e:
-        print(f"\n❌ Analysis failed: {e}")
+        print(f"\n[ERROR] Analysis failed: {e}")
         sys.exit(1)
 
 def test_suite():
     """Test function to verify the suite works"""
-    print("🧪 Testing Forensic Intelligence Suite...")
+    print("[INFO] Testing Forensic Intelligence Suite...")
     
     # Create test directory structure
     test_dir = Path("test_extraction")
@@ -404,7 +410,7 @@ def test_suite():
     conn.commit()
     conn.close()
     
-    print(f"✅ Created test database: {test_db}")
+    print(f"[OK] Created test database: {test_db}")
     
     # Run analysis
     try:
@@ -412,15 +418,15 @@ def test_suite():
         report = suite.analyze_path(str(test_dir))
         suite.save_report(report, "test_report.json")
         
-        print("✅ Test completed successfully!")
-        print("📄 Test report saved as: test_report.json")
+        print("[OK] Test completed successfully!")
+        print("[INFO] Test report saved as: test_report.json")
         
         # Cleanup
         test_db.unlink()
         test_dir.rmdir()
         
     except Exception as e:
-        print(f"❌ Test failed: {e}")
+        print(f"[ERROR] Test failed: {e}")
         # Cleanup on failure
         if test_db.exists():
             test_db.unlink()
