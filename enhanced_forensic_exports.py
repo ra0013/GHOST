@@ -1,3 +1,4 @@
+```python
 #!/usr/bin/env python3
 """
 Enhanced Forensic Export Functions
@@ -518,20 +519,20 @@ class ComprehensiveForensicExporter:
             
             # Export all data types
             self._export_to_specific_file(case_folder / "Communications" / "detailed_call_logs.csv", 
-                                        self._get_detailed_call_data)
+                                        self.export_detailed_call_logs_csv)
             self._export_to_specific_file(case_folder / "Communications" / "messages.csv", 
                                         self._get_messages_data)
             self._export_to_specific_file(case_folder / "Communications" / "contacts.csv", 
                                         self._get_contacts_data)
             
             self._export_to_specific_file(case_folder / "Multimedia" / "multimedia_inventory.csv", 
-                                        self._get_multimedia_data)
+                                        self.export_multimedia_inventory_csv)
             
             self._export_to_specific_file(case_folder / "Networks" / "network_analysis.csv", 
-                                        self._get_network_data)
+                                        self.export_network_analysis_csv)
             
             self._export_to_specific_file(case_folder / "Devices" / "device_interactions.csv", 
-                                        self._get_device_interaction_data)
+                                        self.export_device_interactions_csv)
             
             # Export reports
             generator = ForensicReportGenerator(self.case_name, self.examiner_name, self.gui.analysis_results)
@@ -615,7 +616,7 @@ class ComprehensiveForensicExporter:
             'resolution': exif.get('resolution', ''),
             'color_space': exif.get('color_space', ''),
             'compression': exif.get('compression', ''),
-            'hash_md5': media_file.get('md5_hash', ''),
+            'hash_md5': media Equipotential.get('md5_hash', ''),
             'hash_sha256': media_file.get('sha256_hash', ''),
             'deleted_status': 'Yes' if media_file.get('deleted') else 'No',
             'recovery_source': media_file.get('recovery_source', ''),
@@ -800,61 +801,131 @@ class ComprehensiveForensicExporter:
         else:
             return 'Low'
     
-    def _export_to_specific_file(self, filepath, data_function):
-        """Export data to specific file using data function"""
+    def _export_to_specific_file(self, filepath, export_function):
+        """Export data to specific file using export function"""
         try:
-            data_function(filepath)
+            # Temporarily override filedialog to write to specific file
+            original_asksaveasfilename = filedialog.asksaveasfilename
+            filedialog.asksaveasfilename = lambda *args, **kwargs: str(filepath)
+            export_function()
+            filedialog.asksaveasfilename = original_asksaveasfilename
         except Exception as e:
             print(f"Warning: Failed to export {filepath}: {e}")
     
-    def _get_detailed_call_data(self, filepath):
-        """Export detailed call data to specified file"""
-        # This would contain the actual call export logic
-        # For now, create a placeholder file
-        with open(filepath, 'w', newline='', encoding='utf-8') as f:
-            writer = csv.writer(f)
-            writer.writerow(['timestamp', 'contact', 'duration', 'type'])
-            writer.writerow(['Sample call data would be exported here'])
-    
     def _get_messages_data(self, filepath):
         """Export messages data to specified file"""
-        # This would contain the actual messages export logic
-        with open(filepath, 'w', newline='', encoding='utf-8') as f:
-            writer = csv.writer(f)
-            writer.writerow(['timestamp', 'contact', 'message', 'direction'])
-            writer.writerow(['Sample message data would be exported here'])
+        if not self.gui.analysis_results:
+            return
+        
+        try:
+            raw_data = self.gui.analysis_results.get('raw_evidence_data', {})
+            messages = raw_data.get('messages', [])
+            
+            with open(filepath, 'w', newline='', encoding='utf-8') as csvfile:
+                fieldnames = [
+                    'message_id', 'timestamp', 'date', 'time', 'contact_name', 'phone_number',
+                    'message_text', 'direction', 'service_type', 'attachment_count',
+                    'is_read', 'is_delivered', 'is_deleted', 'group_chat', 'keyword_hits',
+                    'case_name', 'examiner'
+                ]
+                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+                writer.writeheader()
+                
+                for i, msg in enumerate(messages, 1):
+                    timestamp = msg.get('timestamp', '')
+                    date_part = ''
+                    time_part = ''
+                    try:
+                        if timestamp:
+                            dt = datetime.datetime.fromisoformat(timestamp.replace('Z', '+00:00'))
+                            date_part = dt.strftime('%Y-%m-%d')
+                            time_part = dt.strftime('%H:%M:%S')
+                    except:
+                        pass
+                    
+                    direction = 'Outgoing' if msg.get('is_from_me', False) else 'Incoming'
+                    
+                    writer.writerow({
+                        'message_id': f"MSG_{i:06d}",
+                        'timestamp': timestamp,
+                        'date': date_part,
+                        'time': time_part,
+                        'contact_name': msg.get('contact', 'Unknown'),
+                        'phone_number': msg.get('address', 'Unknown'),
+                        'message_text': msg.get('text', ''),
+                        'direction': direction,
+                        'service_type': msg.get('service', 'Unknown'),
+                        'attachment_count': msg.get('attachment_count', 0),
+                        'is_read': 'Yes' if msg.get('is_read', False) else 'No',
+                        'is_delivered': 'Yes' if msg.get('is_delivered', False) else 'No',
+                        'is_deleted': 'Yes' if msg.get('is_deleted', False) else 'No',
+                        'group_chat': 'Yes' if msg.get('is_group', False) else 'No',
+                        'keyword_hits': ', '.join(msg.get('keyword_hits', [])),
+                        'case_name': self.case_name,
+                        'examiner': self.examiner_name
+                    })
+            
+        except Exception as e:
+            print(f"Warning: Failed to export messages: {e}")
     
     def _get_contacts_data(self, filepath):
         """Export contacts data to specified file"""
-        # This would contain the actual contacts export logic
-        with open(filepath, 'w', newline='', encoding='utf-8') as f:
-            writer = csv.writer(f)
-            writer.writerow(['name', 'phone', 'email', 'interactions'])
-            writer.writerow(['Sample contact data would be exported here'])
+        if not self.gui.analysis_results:
+            return
+        
+        try:
+            raw_data = self.gui.analysis_results.get('raw_evidence_data', {})
+            contacts = raw_data.get('contacts', [])
+            
+            with open(filepath, 'w', newline='', encoding='utf-8') as csvfile:
+                fieldnames = [
+                    'contact_id', 'first_name', 'last_name', 'phone_number', 'email',
+                    'organization', 'address', 'total_interactions', 'last_interaction',
+                    'contact_frequency_rank', 'case_name', 'examiner'
+                ]
+                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+                writer.writeheader()
+                
+                # Calculate interaction frequencies
+                interaction_counts = {}
+                for contact in contacts:
+                    phone = contact.get('phone', 'Unknown')
+                    interaction_counts[phone] = interaction_counts.get(phone, 0) + 1
+                
+                sorted_contacts = sorted(interaction_counts.items(), key=lambda x: x[1], reverse=True)
+                contact_rankings = {phone: rank + 1 for rank, (phone, count) in enumerate(sorted_contacts)}
+                
+                for i, contact in enumerate(contacts, 1):
+                    phone = contact.get('phone', 'Unknown')
+                    writer.writerow({
+                        'contact_id': f"CONT_{i:06d}",
+                        'first_name': contact.get('first_name', ''),
+                        'last_name': contact.get('last_name', ''),
+                        'phone_number': phone,
+                        'email': contact.get('email', ''),
+                        'organization': contact.get('organization', ''),
+                        'address': contact.get('address', ''),
+                        'total_interactions': interaction_counts.get(phone, 0),
+                        'last_interaction': contact.get('last_interaction', ''),
+                        'contact_frequency_rank': contact_rankings.get(phone, 0),
+                        'case_name': self.case_name,
+                        'examiner': self.examiner_name
+                    })
+            
+        except Exception as e:
+            print(f"Warning: Failed to export contacts: {e}")
     
     def _get_multimedia_data(self, filepath):
         """Export multimedia data to specified file"""
-        # This would contain the actual multimedia export logic
-        with open(filepath, 'w', newline='', encoding='utf-8') as f:
-            writer = csv.writer(f)
-            writer.writerow(['filename', 'type', 'size', 'date_created', 'gps_location'])
-            writer.writerow(['Sample multimedia data would be exported here'])
+        self._export_to_specific_file(filepath, self.export_multimedia_inventory_csv)
     
     def _get_network_data(self, filepath):
         """Export network data to specified file"""
-        # This would contain the actual network export logic
-        with open(filepath, 'w', newline='', encoding='utf-8') as f:
-            writer = csv.writer(f)
-            writer.writerow(['ssid', 'security', 'first_connected', 'data_usage'])
-            writer.writerow(['Sample network data would be exported here'])
+        self._export_to_specific_file(filepath, self.export_network_analysis_csv)
     
     def _get_device_interaction_data(self, filepath):
         """Export device interaction data to specified file"""
-        # This would contain the actual device interaction export logic
-        with open(filepath, 'w', newline='', encoding='utf-8') as f:
-            writer = csv.writer(f)
-            writer.writerow(['device_name', 'type', 'last_connected', 'data_transferred'])
-            writer.writerow(['Sample device interaction data would be exported here'])
+        self._export_to_specific_file(filepath, self.export_device_interactions_csv)
     
     def _create_forensic_index(self, case_folder):
         """Create comprehensive forensic package index"""
@@ -880,19 +951,19 @@ PACKAGE CONTENTS:
 • multimedia_inventory.csv - Complete photo/video/audio inventory
   Includes: EXIF data, GPS coordinates, camera information, file hashes
 
-📡 NETWORKS/
+🌐 NETWORKS/
 • network_analysis.csv - Wi-Fi and cellular network connections
   Includes: Security analysis, location data, usage statistics
 
-🔗 DEVICES/
+📡 DEVICES/
 • device_interactions.csv - Bluetooth, USB, NFC device interactions
   Includes: Pairing history, data transfers, device fingerprinting
 
-📊 REPORTS/
+📄 REPORTS/
 • executive_summary.txt - High-level case summary for leadership
 • detailed_analysis.txt - Complete forensic analysis report
 
-💾 RAW_DATA/
+📊 RAW_DATA/
 • complete_analysis.json - Full raw analysis data in JSON format
 
 FORENSIC INTEGRITY:
@@ -924,30 +995,4 @@ Export Date: {self.timestamp.isoformat()}
 def add_enhanced_export_methods(gui_instance):
     """Add enhanced export methods to the GUI instance"""
     
-    exporter = ComprehensiveForensicExporter(gui_instance)
-    
-    # Replace/add export methods
-    gui_instance.export_detailed_call_logs = exporter.export_detailed_call_logs_csv
-    gui_instance.export_multimedia_inventory = exporter.export_multimedia_inventory_csv
-    gui_instance.export_network_analysis = exporter.export_network_analysis_csv
-    gui_instance.export_device_interactions = exporter.export_device_interactions_csv
-    gui_instance.export_comprehensive_package = exporter.export_comprehensive_forensic_package
-    
-    print("✅ Enhanced forensic export capabilities added!")
-    print("📞 Detailed call log analysis")
-    print("📷 Comprehensive multimedia inventory") 
-    print("📡 Network connection analysis")
-    print("🔗 Device interaction logging")
-    print("📦 Complete forensic packages")
-
-# Example usage in your evidence_gui_app.py:
-# 
-# In your EvidenceAnalysisGUI.__init__ method, add:
-# add_enhanced_export_methods(self)
-#
-# Then add new buttons to your interface that call:
-# - self.export_detailed_call_logs()
-# - self.export_multimedia_inventory() 
-# - self.export_network_analysis()
-# - self.export_device_interactions()
-# - self.export_comprehensive_package()
+    exporter = Comprehensive
