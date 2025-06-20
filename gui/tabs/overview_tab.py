@@ -204,4 +204,102 @@ EVIDENCE SUMMARY:
         communications = evidence_summary.get('communications', {})
         summary += f"💬 Communications:\n"
         summary += f"   • Messages: {communications.get('messages', 0)}\n"
-        summary += f"   • Calls
+        summary += f"   • Calls: {communications.get('calls', 0)}\n"
+        summary += f"   • Contacts: {communications.get('contacts', 0)}\n"
+        
+        # Multimedia
+        multimedia = evidence_summary.get('multimedia', {})
+        summary += f"\n📷 Multimedia:\n"
+        summary += f"   • Photos: {multimedia.get('photos', 0)}\n"
+        summary += f"   • Videos: {multimedia.get('videos', 0)}\n"
+        
+        # Digital Activity
+        digital_activity = evidence_summary.get('digital_activity', {})
+        summary += f"\n📱 Digital Activity:\n"
+        summary += f"   • Browser Records: {digital_activity.get('browser_records', 0)}\n"
+        summary += f"   • Location Points: {digital_activity.get('location_points', 0)}\n"
+        summary += f"   • App Data: {digital_activity.get('app_data', 0)} apps\n"
+        summary += f"   • Databases: {digital_activity.get('databases', 0)}\n"
+        
+        # Communication Intelligence
+        if comm_intel:
+            summary += f"\nCOMMUNICATION INTELLIGENCE:\n"
+            
+            msg_analysis = comm_intel.get('message_analysis', {})
+            if msg_analysis:
+                summary += f"📝 Message Analysis:\n"
+                summary += f"   • Total Messages: {msg_analysis.get('message_count', 0)}\n"
+                summary += f"   • Unique Contacts: {msg_analysis.get('unique_contacts', 0)}\n"
+                
+                keyword_mentions = msg_analysis.get('keyword_mentions', {})
+                if keyword_mentions:
+                    summary += f"   • Keywords Found: {len(keyword_mentions)} types\n"
+                    for keyword, mentions in list(keyword_mentions.items())[:3]:
+                        summary += f"     - '{keyword}': {len(mentions)} mentions\n"
+                
+                top_contacts = msg_analysis.get('top_contacts', [])
+                if top_contacts:
+                    summary += f"   • Top Contacts:\n"
+                    for contact, count in top_contacts[:3]:
+                        summary += f"     - {contact}: {count} messages\n"
+            
+            call_analysis = comm_intel.get('call_analysis', {})
+            if call_analysis:
+                summary += f"\n📞 Call Analysis:\n"
+                summary += f"   • Total Calls: {call_analysis.get('call_count', 0)}\n"
+                summary += f"   • Unique Numbers: {call_analysis.get('unique_numbers', 0)}\n"
+                duration_hours = call_analysis.get('total_duration_minutes', 0) / 60
+                summary += f"   • Total Duration: {duration_hours:.1f} hours\n"
+        
+        # Investigative Leads
+        if investigative_leads:
+            summary += f"\nINVESTIGATIVE LEADS:\n"
+            for i, lead in enumerate(investigative_leads[:5], 1):
+                priority = lead.get('priority', 'Unknown')
+                lead_type = lead.get('type', 'Unknown')
+                description = lead.get('description', 'No description')
+                summary += f"{i}. [{priority}] {lead_type}\n"
+                summary += f"   {description}\n"
+        
+        # Key Statistics
+        key_stats = exec_summary.get('key_statistics', {})
+        if key_stats:
+            summary += f"\nKEY STATISTICS:\n"
+            summary += f"• Total Communications: {key_stats.get('total_communications', 0)}\n"
+            summary += f"• Unique Contacts: {key_stats.get('unique_contacts', 0)}\n"
+            summary += f"• Investigation Keywords: {key_stats.get('investigation_keywords', 0)}\n"
+            summary += f"• Multimedia Files: {key_stats.get('multimedia_files', 0)}\n"
+            summary += f"• Location Points: {key_stats.get('location_points', 0)}\n"
+        
+        # Immediate Actions
+        immediate_actions = exec_summary.get('immediate_actions', [])
+        if immediate_actions:
+            summary += f"\nIMMEDIATE ACTIONS:\n"
+            for i, action in enumerate(immediate_actions, 1):
+                summary += f"{i}. {action}\n"
+        
+        # App Intelligence
+        app_intel = results.get('app_intelligence', {})
+        if app_intel and app_intel.get('apps_found', 0) > 0:
+            summary += f"\nAPP INTELLIGENCE:\n"
+            summary += f"• Apps Found: {app_intel.get('apps_found', 0)}\n"
+            app_summary = app_intel.get('app_summary', {})
+            for app_name, app_info in list(app_summary.items())[:3]:
+                priority = app_info.get('investigation_priority', 'Unknown')
+                files = app_info.get('files_discovered', 0)
+                summary += f"• {app_name}: {files} files ({priority} priority)\n"
+        
+        # Add analysis metadata
+        summary += f"\nANALYSIS METADATA:\n"
+        summary += f"• Tool Version: {case_info.get('tool_version', 'Unknown')}\n"
+        summary += f"• Source Type: {case_info.get('source_type', 'Unknown')}\n"
+        
+        # Add recommendations footer
+        summary += f"\n" + "=" * 50 + "\n"
+        summary += "NEXT STEPS:\n"
+        summary += "1. Review detailed findings in other tabs\n"
+        summary += "2. Export data for further analysis\n"
+        summary += "3. Generate formal reports\n"
+        summary += "4. Coordinate with specialized units if needed\n"
+        
+        return summary
