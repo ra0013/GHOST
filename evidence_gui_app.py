@@ -11,7 +11,14 @@ import os
 from pathlib import Path
 import tkinter as tk
 from tkinter import filedialog, messagebox
-
+# Add this AFTER your existing imports (around line 20-30)
+try:
+    from enhanced_evidence_viewer import enhance_evidence_gui
+    ENHANCED_VIEWER_AVAILABLE = True
+    print("[OK] Enhanced evidence viewer available")
+except ImportError:
+    ENHANCED_VIEWER_AVAILABLE = False
+    print("[INFO] Enhanced evidence viewer not available")
 class ComprehensiveForensicExporter:
     """Enhanced forensic data exporter with full device analysis capabilities"""
     
