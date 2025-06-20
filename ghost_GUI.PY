@@ -40,15 +40,6 @@ except ImportError:
         print(f"[ERROR] Could not load forensic modules: {e}")
         print("Make sure ghost_forensic_suite.py and modules are available")
 
-# Enhanced Evidence Viewer Integration
-try:
-    from enhanced_evidence_viewer import enhance_evidence_gui
-    ENHANCED_VIEWER_AVAILABLE = True
-    print("[OK] Enhanced evidence viewer available")
-except ImportError:
-    ENHANCED_VIEWER_AVAILABLE = False
-    print("[INFO] Enhanced evidence viewer not available")
-
 class ForensicReportGenerator:
     """Generate professional forensic reports"""
     
@@ -196,11 +187,6 @@ class EvidenceAnalysisGUI:
         # Create interface
         self.setup_styling()
         self.create_widgets()
-        
-        # Enhanced Evidence Viewer Integration
-        if ENHANCED_VIEWER_AVAILABLE:
-            enhance_evidence_gui(self)
-            print("✅ Interactive evidence viewing enabled!")
         
         # Start update loops
         self.update_time()
@@ -437,6 +423,17 @@ class EvidenceAnalysisGUI:
                   command=self.export_contacts_csv).pack(side="left", padx=(0, 10))
         ttk.Button(controls, text="View Timeline", 
                   command=self.view_timeline).pack(side="left")
+        # In your export controls section:
+        #ttk.Button(controls, text="Export Detailed Call Logs", 
+         # command=self.export_detailed_call_logs).pack(side="left", padx=(0, 10))
+        #ttk.Button(controls, text="Export Multimedia Inventory", 
+         # command=self.export_multimedia_inventory).pack(side="left", padx=(0, 10))
+        #ttk.Button(controls, text="Export Network Analysis", 
+         # command=self.export_network_analysis).pack(side="left", padx=(0, 10))
+        #ttk.Button(controls, text="Export Device Interactions", 
+         # command=self.export_device_interactions).pack(side="left", padx=(0, 10))
+        #ttk.Button(controls, text="Export Complete Package", 
+         # command=self.export_comprehensive_package).pack(side="left")
         
         # Communications notebook
         comm_notebook = ttk.Notebook(comm_frame)
@@ -678,10 +675,6 @@ class EvidenceAnalysisGUI:
         export_frame = ttk.Frame(report_frame)
         export_frame.grid(row=0, column=0, sticky="ew", pady=(0, 10))
         
-        # Interactive Evidence Browser Button
-        ttk.Button(export_frame, text="🎯 Interactive Evidence Browser", 
-                  command=self.launch_evidence_browser).pack(side="left", padx=(0, 10))
-        
         ttk.Button(export_frame, text="Export Full Report (JSON)", 
                   command=self.export_full_report).pack(side="left", padx=(0, 10))
         ttk.Button(export_frame, text="Export Executive Summary", 
@@ -713,54 +706,6 @@ class EvidenceAnalysisGUI:
         # Current time
         time_label = ttk.Label(status_frame, textvariable=self.time_var)
         time_label.grid(row=0, column=1, sticky="e")
-    
-    def launch_evidence_browser(self):
-        """Launch interactive evidence browser"""
-        if not self.analysis_results:
-            messagebox.showinfo("No Data", "Please run analysis first")
-            return
-        
-        browser_window = tk.Toplevel(self.root)
-        browser_window.title("Interactive Evidence Browser")
-        browser_window.geometry("1200x800")
-        
-        # Create tabbed interface
-        browser_notebook = ttk.Notebook(browser_window)
-        browser_notebook.pack(fill="both", expand=True, padx=10, pady=10)
-        
-        # Instructions tab
-        instructions_frame = ttk.Frame(browser_notebook)
-        browser_notebook.add(instructions_frame, text="🎯 How to Use")
-        
-        instructions_text = """
-INTERACTIVE EVIDENCE FEATURES:
-
-📸 PHOTOS & VIDEOS:
-• Double-click any photo/video → Opens with full metadata
-• Right-click → Context menu with export options  
-• GPS coordinates → Links to Google Maps
-
-💬 MESSAGES:
-• Double-click message → View full conversation
-• Right-click → Search, export, analyze options
-• Automatic keyword highlighting
-
-🗺️ LOCATIONS:
-• Double-click location → Opens Google Maps
-• Right-click → Timeline, movement analysis
-• Export to Google Earth (KML format)
-
-🔍 GENERAL:
-• All evidence is now clickable and interactive
-• Professional exports for court documentation
-• Cross-referencing between evidence types
-        """
-        
-        ttk.Label(instructions_frame, text=instructions_text, 
-                 font=('Arial', 11), justify="left").pack(padx=20, pady=20)
-        
-        ttk.Button(browser_window, text="Close", 
-                  command=browser_window.destroy).pack(pady=10)
     
     # Event handlers and methods
     
@@ -1394,725 +1339,520 @@ INVESTIGATIVE LEADS:
                 
                 for contact in contacts:
                     phone = contact.get('phone', '')
-                    stats = contact_stats.get(#!/usr/bin/env python3
-"""
-GHOST GUI - Evidence-Focused Forensic Analysis Interface
-Professional interface for investigators focused on evidence extraction and analysis
-"""
-
-import sys
-import os
-from pathlib import Path
-import json
-import datetime
-import threading
-import queue
-import csv
-from typing import Dict, List, Any, Optional
-
-# GUI Framework
-try:
-    import tkinter as tk
-    from tkinter import ttk, filedialog, messagebox, scrolledtext
-    import tkinter.font as tkfont
-except ImportError:
-    print("Tkinter not available. Please install tkinter")
-    sys.exit(1)
-
-# Add modules to path
-sys.path.insert(0, str(Path(__file__).parent / "modules"))
-
-# Import the focused forensic suite
-try:
-    from ghost_forensic_suite import FocusedForensicSuite
-    print("[OK] Evidence analysis engine loaded")
-except ImportError:
-    try:
-        # Fallback to modules if available
-        from config_manager import ConfigurationManager
-        from forensic_logger import ForensicLogger
-        print("[OK] Core modules loaded (basic mode)")
-    except ImportError as e:
-        print(f"[ERROR] Could not load forensic modules: {e}")
-        print("Make sure ghost_forensic_suite.py and modules are available")
-
-# Enhanced Evidence Viewer Integration
-try:
-    from enhanced_evidence_viewer import enhance_evidence_gui
-    ENHANCED_VIEWER_AVAILABLE = True
-    print("[OK] Enhanced evidence viewer available")
-except ImportError:
-    ENHANCED_VIEWER_AVAILABLE = False
-    print("[INFO] Enhanced evidence viewer not available")
-
-class ForensicReportGenerator:
-    """Generate professional forensic reports"""
+                    stats = contact_stats.get(phone, {})
+                    
+                    first_name = contact.get('first_name', '')
+                    last_name = contact.get('last_name', '')
+                    display_name = contact.get('display_name', '')
+                    name = f"{first_name} {last_name}".strip() or display_name
+                    
+                    message_count = stats.get('messages', 0)
+                    call_count = stats.get('calls', 0)
+                    
+                    writer.writerow({
+                        'name': name,
+                        'first_name': first_name,
+                        'last_name': last_name,
+                        'phone_number': phone,
+                        'message_count': message_count,
+                        'call_count': call_count,
+                        'total_interactions': message_count + call_count,
+                        'case_name': self.case_name.get()
+                    })
+            
+            messagebox.showinfo("Success", f"Contacts exported to {filename}\n{len(contacts)} records exported")
+            
+        except Exception as e:
+            messagebox.showerror("Export Error", f"Failed to export contacts: {e}")
     
-    def __init__(self, case_name, examiner_name, analysis_results):
-        self.case_name = case_name
-        self.examiner_name = examiner_name
-        self.analysis_results = analysis_results
-        self.report_timestamp = datetime.datetime.now()
-    
-    def generate_executive_summary_report(self):
-        """Generate executive summary report"""
+    def export_multimedia_csv(self):
+        """Export multimedia files list"""
         if not self.analysis_results:
-            return "No analysis data available for report generation."
+            messagebox.showinfo("Info", "No analysis data available for export")
+            return
         
-        exec_summary = self.analysis_results.get('executive_summary', {})
-        evidence_summary = self.analysis_results.get('evidence_summary', {})
+        filename = filedialog.asksaveasfilename(
+            defaultextension=".csv",
+            filetypes=[("CSV files", "*.csv"), ("All files", "*.*")],
+            title="Export Multimedia Files to CSV"
+        )
         
-        report = f"""GHOST FORENSIC ANALYSIS - EXECUTIVE SUMMARY
-{'=' * 60}
-
-CASE INFORMATION:
-• Case Name: {self.case_name}
-• Examiner: {self.examiner_name}
-• Analysis Date: {self.report_timestamp.strftime('%Y-%m-%d %H:%M:%S')}
-• Tool: GHOST Evidence Analysis Interface
-
-PRIORITY ASSESSMENT:
-• Level: {exec_summary.get('priority_level', 'Unknown')}
-• Reason: {exec_summary.get('priority_reason', 'Not specified')}
-
-EVIDENCE SUMMARY:
-• Messages Found: {evidence_summary.get('communications', {}).get('messages', 0)}
-• Calls Found: {evidence_summary.get('communications', {}).get('calls', 0)}
-• Contacts Found: {evidence_summary.get('communications', {}).get('contacts', 0)}
-• Photos Found: {evidence_summary.get('multimedia', {}).get('photos', 0)}
-• Videos Found: {evidence_summary.get('multimedia', {}).get('videos', 0)}
-• Location Points: {evidence_summary.get('digital_activity', {}).get('location_points', 0)}
-
-EVIDENCE TYPES FOUND:
-"""
-        
-        evidence_types = exec_summary.get('evidence_types_found', [])
-        for evidence_type in evidence_types:
-            report += f"• {evidence_type}\n"
-        
-        report += "\nIMMEDIATE ACTIONS REQUIRED:\n"
-        actions = exec_summary.get('immediate_actions', [])
-        for action in actions:
-            report += f"• {action}\n"
-        
-        # Add investigative leads
-        leads = self.analysis_results.get('investigative_leads', [])
-        if leads:
-            report += f"\nINVESTIGATIVE LEADS ({len(leads)}):\n"
-            for i, lead in enumerate(leads[:10], 1):  # Top 10 leads
-                report += f"{i}. {lead.get('type', 'Unknown')} - {lead.get('priority', 'Medium')}\n"
-                report += f"   {lead.get('description', 'No description')}\n"
-                report += f"   Action: {lead.get('action_required', 'No action specified')}\n\n"
-        
-        # Add keyword analysis
-        comm_intel = self.analysis_results.get('communication_intelligence', {})
-        msg_analysis = comm_intel.get('message_analysis', {})
-        keyword_mentions = msg_analysis.get('keyword_mentions', {})
-        
-        if keyword_mentions:
-            report += "KEYWORD INTELLIGENCE:\n"
-            for keyword, mentions in keyword_mentions.items():
-                report += f"• '{keyword}': {len(mentions)} mentions\n"
-        
-        report += f"\n\nReport generated by GHOST Evidence Analysis Interface\nTimestamp: {self.report_timestamp.isoformat()}"
-        
-        return report
-    
-    def generate_detailed_report(self):
-        """Generate detailed forensic report"""
-        if not self.analysis_results:
-            return "No analysis data available for detailed report generation."
-        
-        report = self.generate_executive_summary_report()
-        
-        # Add detailed sections
-        report += f"\n\n{'=' * 60}\nDETAILED ANALYSIS SECTIONS\n{'=' * 60}\n"
-        
-        # Communication Intelligence Details
-        comm_intel = self.analysis_results.get('communication_intelligence', {})
-        if comm_intel:
-            report += "\nCOMMUNICATION INTELLIGENCE:\n"
-            report += "-" * 30 + "\n"
-            
-            msg_analysis = comm_intel.get('message_analysis', {})
-            if msg_analysis:
-                report += f"Messages Analyzed: {msg_analysis.get('message_count', 0)}\n"
-                report += f"Unique Contacts: {msg_analysis.get('unique_contacts', 0)}\n"
-                
-                # Top contacts
-                top_contacts = msg_analysis.get('top_contacts', [])
-                if top_contacts:
-                    report += "\nTOP MESSAGE CONTACTS:\n"
-                    for contact, count in top_contacts[:10]:
-                        report += f"• {contact}: {count} messages\n"
-            
-            call_analysis = comm_intel.get('call_analysis', {})
-            if call_analysis:
-                report += f"\nCALL ANALYSIS:\n"
-                report += f"Total Calls: {call_analysis.get('call_count', 0)}\n"
-                report += f"Unique Numbers: {call_analysis.get('unique_numbers', 0)}\n"
-                report += f"Total Duration: {call_analysis.get('total_duration_hours', 0):.1f} hours\n"
-        
-        # App Intelligence
-        app_intel = self.analysis_results.get('app_intelligence', {})
-        if app_intel:
-            report += "\nAPPLICATION INTELLIGENCE:\n"
-            report += "-" * 30 + "\n"
-            
-            app_summary = app_intel.get('app_summary', {})
-            for app_name, app_info in app_summary.items():
-                priority = app_info.get('investigation_priority', 'Medium')
-                report += f"• {app_name}: {priority} priority\n"
-        
-        return report
-
-class EvidenceAnalysisGUI:
-    """Evidence-focused GUI for GHOST forensic analysis"""
-    
-    def __init__(self):
-        self.root = tk.Tk()
-        self.setup_main_window()
-        
-        # Application state
-        self.case_name = tk.StringVar()
-        self.examiner_name = tk.StringVar()
-        self.extraction_path = tk.StringVar()
-        
-        # Analysis state
-        self.analysis_thread = None
-        self.analysis_results = None
-        self.progress_queue = queue.Queue()
-        self.status_queue = queue.Queue()
-        
-        # Status variables
-        self.status_var = tk.StringVar(value="Ready for evidence analysis")
-        self.progress_var = tk.DoubleVar()
-        self.time_var = tk.StringVar()
-        
-        # Create interface
-        self.setup_styling()
-        self.create_widgets()
-        
-        # Enhanced Evidence Viewer Integration
-        if ENHANCED_VIEWER_AVAILABLE:
-            enhance_evidence_gui(self)
-            print("✅ Interactive evidence viewing enabled!")
-        
-        # Start update loops
-        self.update_time()
-        self.check_queues()
-    
-    def setup_main_window(self):
-        """Configure main window"""
-        self.root.title("GHOST - Evidence Analysis Interface")
-        self.root.geometry("1200x800")
-        self.root.minsize(1000, 600)
-        
-        # Configure responsive design
-        self.root.grid_rowconfigure(0, weight=1)
-        self.root.grid_columnconfigure(0, weight=1)
-        
-        # Handle window close
-        self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
-    
-    def setup_styling(self):
-        """Configure modern styling"""
-        self.style = ttk.Style()
+        if not filename:
+            return
         
         try:
-            self.style.theme_use('clam')
-        except:
-            self.style.theme_use('default')
-        
-        # Evidence-focused color scheme
-        colors = {
-            'primary': '#2E4A72',      # Investigation blue
-            'accent': '#C7102E',       # Alert red
-            'success': '#228B22',      # Evidence green
-            'text': '#333333'          # Dark gray
-        }
-        
-        # Configure styles
-        self.style.configure('Title.TLabel', 
-                           font=('Arial', 16, 'bold'), 
-                           foreground=colors['primary'])
-        
-        self.style.configure('Header.TLabel', 
-                           font=('Arial', 12, 'bold'), 
-                           foreground=colors['text'])
-        
-        self.style.configure('Evidence.TLabel',
-                           font=('Arial', 10, 'bold'),
-                           foreground=colors['success'])
-        
-        self.style.configure('Alert.TLabel',
-                           font=('Arial', 10, 'bold'),
-                           foreground=colors['accent'])
+            raw_data = self.analysis_results.get('raw_evidence_data', {})
+            photos = raw_data.get('photos', [])
+            videos = raw_data.get('videos', [])
+            
+            with open(filename, 'w', newline='', encoding='utf-8') as csvfile:
+                fieldnames = [
+                    'file_type', 'filename', 'path', 'size_bytes', 'size_mb',
+                    'date_modified', 'case_name'
+                ]
+                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+                writer.writeheader()
+                
+                # Export photos
+                for photo in photos:
+                    size_bytes = photo.get('size', 0)
+                    size_mb = size_bytes / (1024 * 1024) if size_bytes > 0 else 0
+                    
+                    writer.writerow({
+                        'file_type': 'Photo',
+                        'filename': photo.get('filename', ''),
+                        'path': photo.get('path', ''),
+                        'size_bytes': size_bytes,
+                        'size_mb': round(size_mb, 2),
+                        'date_modified': photo.get('date_modified', ''),
+                        'case_name': self.case_name.get()
+                    })
+                
+                # Export videos
+                for video in videos:
+                    size_bytes = video.get('size', 0)
+                    size_mb = size_bytes / (1024 * 1024) if size_bytes > 0 else 0
+                    
+                    writer.writerow({
+                        'file_type': 'Video',
+                        'filename': video.get('filename', ''),
+                        'path': video.get('path', ''),
+                        'size_bytes': size_bytes,
+                        'size_mb': round(size_mb, 2),
+                        'date_modified': video.get('date_modified', ''),
+                        'case_name': self.case_name.get()
+                    })
+            
+            total_files = len(photos) + len(videos)
+            messagebox.showinfo("Success", f"Multimedia files exported to {filename}\n{total_files} records exported ({len(photos)} photos, {len(videos)} videos)")
+            
+        except Exception as e:
+            messagebox.showerror("Export Error", f"Failed to export multimedia files: {e}")
     
-    def create_widgets(self):
-        """Create all GUI widgets"""
-        # Main container
-        main_frame = ttk.Frame(self.root, padding="10")
-        main_frame.grid(row=0, column=0, sticky="nsew")
-        main_frame.grid_rowconfigure(1, weight=1)
-        main_frame.grid_columnconfigure(0, weight=1)
+    def export_locations_csv(self):
+        """Export location data to CSV"""
+        if not self.analysis_results:
+            messagebox.showinfo("Info", "No analysis data available for export")
+            return
         
-        # Title bar
-        self.create_title_bar(main_frame)
+        filename = filedialog.asksaveasfilename(
+            defaultextension=".csv",
+            filetypes=[("CSV files", "*.csv"), ("All files", "*.*")],
+            title="Export Location Data to CSV"
+        )
         
-        # Main notebook for tabs
-        self.notebook = ttk.Notebook(main_frame)
-        self.notebook.grid(row=1, column=0, sticky="nsew", pady=(10, 0))
+        if not filename:
+            return
         
-        # Create tabs
-        self.create_case_setup_tab()
-        self.create_evidence_overview_tab()
-        self.create_communications_tab()
-        self.create_multimedia_tab()
-        self.create_apps_locations_tab()
-        self.create_report_tab()
-        
-        # Status bar
-        self.create_status_bar(main_frame)
+        try:
+            raw_data = self.analysis_results.get('raw_evidence_data', {})
+            locations = raw_data.get('locations', [])
+            
+            with open(filename, 'w', newline='', encoding='utf-8') as csvfile:
+                fieldnames = [
+                    'timestamp', 'latitude', 'longitude', 'accuracy_meters',
+                    'altitude', 'speed', 'case_name'
+                ]
+                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+                writer.writeheader()
+                
+                for location in locations:
+                    writer.writerow({
+                        'timestamp': location.get('timestamp', ''),
+                        'latitude': location.get('latitude', ''),
+                        'longitude': location.get('longitude', ''),
+                        'accuracy_meters': location.get('accuracy', ''),
+                        'altitude': location.get('altitude', ''),
+                        'speed': location.get('speed', ''),
+                        'case_name': self.case_name.get()
+                    })
+            
+            messagebox.showinfo("Success", f"Location data exported to {filename}\n{len(locations)} records exported")
+            
+        except Exception as e:
+            messagebox.showerror("Export Error", f"Failed to export location data: {e}")
     
-    def create_title_bar(self, parent):
-        """Create title bar"""
-        title_frame = ttk.Frame(parent)
-        title_frame.grid(row=0, column=0, sticky="ew", pady=(0, 10))
-        title_frame.grid_columnconfigure(1, weight=1)
+    def export_executive_summary_txt(self):
+        """Export executive summary as text file"""
+        if not self.analysis_results:
+            messagebox.showinfo("Info", "No analysis data available for export")
+            return
         
-        # Main title
-        title = ttk.Label(title_frame, 
-                         text="GHOST - Evidence Analysis Interface", 
-                         style='Title.TLabel')
-        title.grid(row=0, column=0, sticky="w")
+        filename = filedialog.asksaveasfilename(
+            defaultextension=".txt",
+            filetypes=[("Text files", "*.txt"), ("All files", "*.*")],
+            title="Export Executive Summary"
+        )
         
-        # Subtitle
-        subtitle = ttk.Label(title_frame, 
-                           text="Golden Hour Operations and Strategic Threat Assessment")
-        subtitle.grid(row=0, column=1, sticky="e")
+        if not filename:
+            return
+        
+        try:
+            generator = ForensicReportGenerator(
+                self.case_name.get(),
+                self.examiner_name.get(),
+                self.analysis_results
+            )
+            
+            report = generator.generate_executive_summary_report()
+            
+            with open(filename, 'w', encoding='utf-8') as f:
+                f.write(report)
+            
+            messagebox.showinfo("Success", f"Executive summary exported to {filename}")
+            
+        except Exception as e:
+            messagebox.showerror("Export Error", f"Failed to export executive summary: {e}")
     
-    def create_case_setup_tab(self):
-        """Create case setup and analysis tab"""
-        case_frame = ttk.Frame(self.notebook, padding="20")
-        self.notebook.add(case_frame, text="Case Setup")
+    def export_detailed_report_txt(self):
+        """Export detailed forensic report"""
+        if not self.analysis_results:
+            messagebox.showinfo("Info", "No analysis data available for export")
+            return
         
-        case_frame.grid_columnconfigure(0, weight=1)
+        filename = filedialog.asksaveasfilename(
+            defaultextension=".txt",
+            filetypes=[("Text files", "*.txt"), ("All files", "*.*")],
+            title="Export Detailed Forensic Report"
+        )
         
-        # Case Information
-        info_frame = ttk.LabelFrame(case_frame, text="Case Information", padding="15")
-        info_frame.grid(row=0, column=0, sticky="ew", pady=(0, 20))
-        info_frame.grid_columnconfigure(1, weight=1)
+        if not filename:
+            return
         
-        # Case name
-        ttk.Label(info_frame, text="Case Name:", style='Header.TLabel').grid(
-            row=0, column=0, sticky="w", pady=(0, 10))
-        case_entry = ttk.Entry(info_frame, textvariable=self.case_name, width=40)
-        case_entry.grid(row=0, column=1, sticky="ew", padx=(10, 0), pady=(0, 10))
-        
-        # Examiner
-        ttk.Label(info_frame, text="Examiner:", style='Header.TLabel').grid(
-            row=1, column=0, sticky="w", pady=(0, 10))
-        examiner_entry = ttk.Entry(info_frame, textvariable=self.examiner_name, width=40)
-        examiner_entry.grid(row=1, column=1, sticky="ew", padx=(10, 0), pady=(0, 10))
-        
-        # Extraction path
-        ttk.Label(info_frame, text="Extraction Path:", style='Header.TLabel').grid(
-            row=2, column=0, sticky="w")
-        
-        path_frame = ttk.Frame(info_frame)
-        path_frame.grid(row=2, column=1, sticky="ew", padx=(10, 0))
-        path_frame.grid_columnconfigure(0, weight=1)
-        
-        path_entry = ttk.Entry(path_frame, textvariable=self.extraction_path)
-        path_entry.grid(row=0, column=0, sticky="ew", padx=(0, 10))
-        
-        ttk.Button(path_frame, text="Browse...", command=self.browse_extraction).grid(row=0, column=1)
-        
-        # File type indicator
-        self.file_type_var = tk.StringVar(value="No extraction selected")
-        ttk.Label(info_frame, textvariable=self.file_type_var).grid(
-            row=3, column=1, sticky="w", padx=(10, 0), pady=(5, 0))
-        
-        # Analysis Controls
-        analysis_frame = ttk.LabelFrame(case_frame, text="Evidence Analysis", padding="15")
-        analysis_frame.grid(row=1, column=0, sticky="ew", pady=(0, 20))
-        
-        # Progress bar
-        self.progress_bar = ttk.Progressbar(analysis_frame, variable=self.progress_var, 
-                                          mode='determinate')
-        self.progress_bar.grid(row=0, column=0, sticky="ew", pady=(0, 10))
-        analysis_frame.grid_columnconfigure(0, weight=1)
-        
-        # Control buttons
-        button_frame = ttk.Frame(analysis_frame)
-        button_frame.grid(row=1, column=0, sticky="ew")
-        
-        self.analyze_btn = ttk.Button(button_frame, text="Start Evidence Analysis", 
-                                     command=self.start_evidence_analysis)
-        self.analyze_btn.pack(side="left", padx=(0, 10))
-        
-        self.cancel_btn = ttk.Button(button_frame, text="Cancel", 
-                                    command=self.cancel_analysis, state="disabled")
-        self.cancel_btn.pack(side="left", padx=(0, 10))
-        
-        ttk.Button(button_frame, text="Save Case", 
-                  command=self.save_case).pack(side="left", padx=(0, 10))
-        ttk.Button(button_frame, text="Load Case", 
-                  command=self.load_case).pack(side="left")
-        
-        # Analysis Status
-        status_frame = ttk.LabelFrame(case_frame, text="Analysis Status", padding="15")
-        status_frame.grid(row=2, column=0, sticky="ew")
-        
-        self.analysis_status_text = scrolledtext.ScrolledText(status_frame, height=8, font=('Consolas', 9))
-        self.analysis_status_text.pack(fill="both", expand=True)
+        try:
+            generator = ForensicReportGenerator(
+                self.case_name.get(),
+                self.examiner_name.get(),
+                self.analysis_results
+            )
+            
+            report = generator.generate_detailed_report()
+            
+            with open(filename, 'w', encoding='utf-8') as f:
+                f.write(report)
+            
+            messagebox.showinfo("Success", f"Detailed report exported to {filename}")
+            
+        except Exception as e:
+            messagebox.showerror("Export Error", f"Failed to export detailed report: {e}")
     
-    def create_evidence_overview_tab(self):
-        """Create evidence overview tab"""
-        overview_frame = ttk.Frame(self.notebook, padding="20")
-        self.notebook.add(overview_frame, text="Evidence Overview")
+    def export_all_data_package(self):
+        """Export complete data package with all files"""
+        if not self.analysis_results:
+            messagebox.showinfo("Info", "No analysis data available for export")
+            return
         
-        # Summary cards
-        cards_frame = ttk.Frame(overview_frame)
-        cards_frame.pack(fill="x", pady=(0, 20))
+        # Ask for directory instead of file
+        directory = filedialog.askdirectory(title="Select Directory for Data Package Export")
         
-        self.evidence_cards = {}
-        card_data = [
-            ("Messages", "0"),
-            ("Calls", "0"), 
-            ("Photos", "0"),
-            ("Apps", "0"),
-            ("Locations", "0"),
-            ("Alerts", "0")
-        ]
+        if not directory:
+            return
         
-        for i, (title, value) in enumerate(card_data):
-            card = self.create_evidence_card(cards_frame, title, value)
-            card.grid(row=0, column=i, padx=5, sticky="ew")
-            self.evidence_cards[title] = card
-            cards_frame.grid_columnconfigure(i, weight=1)
-        
-        # Executive Summary
-        exec_frame = ttk.LabelFrame(overview_frame, text="Executive Summary")
-        exec_frame.pack(fill="both", expand=True)
-        
-        self.executive_summary_text = scrolledtext.ScrolledText(exec_frame, font=('Arial', 10))
-        self.executive_summary_text.pack(fill="both", expand=True, padx=10, pady=10)
+        try:
+            base_path = Path(directory)
+            case_folder = base_path / f"{self.case_name.get()}_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}"
+            case_folder.mkdir(exist_ok=True)
+            
+            # Export all CSV files by calling the individual export methods
+            # Messages CSV
+            raw_data = self.analysis_results.get('raw_evidence_data', {})
+            messages = raw_data.get('messages', [])
+            comm_intel = self.analysis_results.get('communication_intelligence', {})
+            keyword_mentions = comm_intel.get('message_analysis', {}).get('keyword_mentions', {})
+            
+            with open(case_folder / "messages.csv", 'w', newline='', encoding='utf-8') as csvfile:
+                fieldnames = ['timestamp', 'contact', 'direction', 'message_text', 'service', 'keywords_found', 'character_count', 'case_name']
+                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+                writer.writeheader()
+                
+                for message in messages:
+                    text = message.get('text', '').lower()
+                    found_keywords = [kw for kw in keyword_mentions.keys() if kw in text]
+                    
+                    writer.writerow({
+                        'timestamp': message.get('timestamp', ''),
+                        'contact': message.get('contact', ''),
+                        'direction': 'Outgoing' if message.get('is_from_me') else 'Incoming',
+                        'message_text': message.get('text', ''),
+                        'service': message.get('service', ''),
+                        'keywords_found': ', '.join(found_keywords),
+                        'character_count': len(message.get('text', '')),
+                        'case_name': self.case_name.get()
+                    })
+            
+            # Calls CSV
+            calls = raw_data.get('calls', [])
+            with open(case_folder / "calls.csv", 'w', newline='', encoding='utf-8') as csvfile:
+                fieldnames = ['timestamp', 'contact', 'phone_number', 'duration_seconds', 'call_type', 'direction', 'case_name']
+                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+                writer.writeheader()
+                
+                for call in calls:
+                    call_type = call.get('type', '').lower()
+                    if 'incoming' in call_type or 'received' in call_type:
+                        direction = 'Incoming'
+                    elif 'outgoing' in call_type or 'made' in call_type:
+                        direction = 'Outgoing'
+                    elif 'missed' in call_type:
+                        direction = 'Missed'
+                    else:
+                        direction = 'Unknown'
+                    
+                    writer.writerow({
+                        'timestamp': call.get('timestamp', ''),
+                        'contact': call.get('contact', ''),
+                        'phone_number': call.get('address') or call.get('number', ''),
+                        'duration_seconds': call.get('duration', 0),
+                        'call_type': call.get('type', ''),
+                        'direction': direction,
+                        'case_name': self.case_name.get()
+                    })
+            
+            # Contacts CSV
+            contacts = raw_data.get('contacts', [])
+            top_contacts = comm_intel.get('top_contacts', [])
+            contact_stats = {contact['contact']: contact for contact in top_contacts}
+            
+            with open(case_folder / "contacts.csv", 'w', newline='', encoding='utf-8') as csvfile:
+                fieldnames = ['name', 'first_name', 'last_name', 'phone_number', 'message_count', 'call_count', 'total_interactions', 'case_name']
+                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+                writer.writeheader()
+                
+                for contact in contacts:
+                    phone = contact.get('phone', '')
+                    stats = contact_stats.get(phone, {})
+                    
+                    first_name = contact.get('first_name', '')
+                    last_name = contact.get('last_name', '')
+                    display_name = contact.get('display_name', '')
+                    name = f"{first_name} {last_name}".strip() or display_name
+                    
+                    message_count = stats.get('messages', 0)
+                    call_count = stats.get('calls', 0)
+                    
+                    writer.writerow({
+                        'name': name,
+                        'first_name': first_name,
+                        'last_name': last_name,
+                        'phone_number': phone,
+                        'message_count': message_count,
+                        'call_count': call_count,
+                        'total_interactions': message_count + call_count,
+                        'case_name': self.case_name.get()
+                    })
+            
+            # Multimedia CSV
+            photos = raw_data.get('photos', [])
+            videos = raw_data.get('videos', [])
+            
+            with open(case_folder / "multimedia.csv", 'w', newline='', encoding='utf-8') as csvfile:
+                fieldnames = ['file_type', 'filename', 'path', 'size_bytes', 'size_mb', 'date_modified', 'case_name']
+                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+                writer.writeheader()
+                
+                for photo in photos:
+                    size_bytes = photo.get('size', 0)
+                    size_mb = size_bytes / (1024 * 1024) if size_bytes > 0 else 0
+                    
+                    writer.writerow({
+                        'file_type': 'Photo',
+                        'filename': photo.get('filename', ''),
+                        'path': photo.get('path', ''),
+                        'size_bytes': size_bytes,
+                        'size_mb': round(size_mb, 2),
+                        'date_modified': photo.get('date_modified', ''),
+                        'case_name': self.case_name.get()
+                    })
+                
+                for video in videos:
+                    size_bytes = video.get('size', 0)
+                    size_mb = size_bytes / (1024 * 1024) if size_bytes > 0 else 0
+                    
+                    writer.writerow({
+                        'file_type': 'Video',
+                        'filename': video.get('filename', ''),
+                        'path': video.get('path', ''),
+                        'size_bytes': size_bytes,
+                        'size_mb': round(size_mb, 2),
+                        'date_modified': video.get('date_modified', ''),
+                        'case_name': self.case_name.get()
+                    })
+            
+            # Locations CSV
+            locations = raw_data.get('locations', [])
+            with open(case_folder / "locations.csv", 'w', newline='', encoding='utf-8') as csvfile:
+                fieldnames = ['timestamp', 'latitude', 'longitude', 'accuracy_meters', 'altitude', 'speed', 'case_name']
+                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+                writer.writeheader()
+                
+                for location in locations:
+                    writer.writerow({
+                        'timestamp': location.get('timestamp', ''),
+                        'latitude': location.get('latitude', ''),
+                        'longitude': location.get('longitude', ''),
+                        'accuracy_meters': location.get('accuracy', ''),
+                        'altitude': location.get('altitude', ''),
+                        'speed': location.get('speed', ''),
+                        'case_name': self.case_name.get()
+                    })
+            
+            # Export reports
+            generator = ForensicReportGenerator(
+                self.case_name.get(),
+                self.examiner_name.get(),
+                self.analysis_results
+            )
+            
+            with open(case_folder / "executive_summary.txt", 'w', encoding='utf-8') as f:
+                f.write(generator.generate_executive_summary_report())
+            
+            with open(case_folder / "detailed_report.txt", 'w', encoding='utf-8') as f:
+                f.write(generator.generate_detailed_report())
+            
+            # Export raw JSON data
+            with open(case_folder / "raw_analysis_data.json", 'w', encoding='utf-8') as f:
+                json.dump(self.analysis_results, f, indent=2, default=str)
+            
+            # Create index file
+            with open(case_folder / "README.txt", 'w') as f:
+                f.write(f"""GHOST FORENSIC ANALYSIS - DATA PACKAGE
+Case: {self.case_name.get()}
+Examiner: {self.examiner_name.get()}
+Generated: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+
+FILES INCLUDED:
+• executive_summary.txt - Executive summary report
+• detailed_report.txt - Detailed forensic analysis
+• messages.csv - Text message data
+• calls.csv - Call log data  
+• contacts.csv - Contact information
+• multimedia.csv - Photo and video files
+• locations.csv - GPS location data
+• raw_analysis_data.json - Complete analysis results
+
+All CSV files can be opened in Excel or imported into other analysis tools.
+""")
+            
+            messagebox.showinfo("Success", f"Complete data package exported to:\n{case_folder}")
+            
+        except Exception as e:
+            messagebox.showerror("Export Error", f"Failed to export data package: {e}")
     
-    def create_evidence_card(self, parent, title, value):
-        """Create evidence summary card"""
-        card_frame = ttk.LabelFrame(parent, text=title)
+    def export_full_report(self):
+        """Export full analysis report as JSON"""
+        if not self.analysis_results:
+            messagebox.showinfo("Info", "No analysis data available for export")
+            return
         
-        # Value label
-        value_label = ttk.Label(card_frame, text=value, font=('Arial', 18, 'bold'))
-        value_label.pack(pady=10)
+        filename = filedialog.asksaveasfilename(
+            defaultextension=".json",
+            filetypes=[("JSON files", "*.json"), ("All files", "*.*")],
+            title="Export Full Analysis Report"
+        )
         
-        # Store reference to value label for updates
-        card_frame.value_label = value_label
+        if not filename:
+            return
         
-        return card_frame
+        try:
+            with open(filename, 'w', encoding='utf-8') as f:
+                json.dump(self.analysis_results, f, indent=2, default=str)
+            messagebox.showinfo("Success", f"Full report exported to {filename}")
+        except Exception as e:
+            messagebox.showerror("Export Error", f"Failed to export report: {e}")
     
-    def create_communications_tab(self):
-        """Create communications analysis tab"""
-        comm_frame = ttk.Frame(self.notebook, padding="20")
-        self.notebook.add(comm_frame, text="Communications")
-        
-        comm_frame.grid_rowconfigure(1, weight=1)
-        comm_frame.grid_columnconfigure(0, weight=1)
-        
-        # Controls
-        controls = ttk.Frame(comm_frame)
-        controls.grid(row=0, column=0, sticky="ew", pady=(0, 10))
-        
-        ttk.Button(controls, text="Export Messages", 
-                  command=self.export_messages_csv).pack(side="left", padx=(0, 10))
-        ttk.Button(controls, text="Export Calls", 
-                  command=self.export_calls_csv).pack(side="left", padx=(0, 10))
-        ttk.Button(controls, text="Export Contacts", 
-                  command=self.export_contacts_csv).pack(side="left", padx=(0, 10))
-        ttk.Button(controls, text="View Timeline", 
-                  command=self.view_timeline).pack(side="left")
-        
-        # Communications notebook
-        comm_notebook = ttk.Notebook(comm_frame)
-        comm_notebook.grid(row=1, column=0, sticky="nsew")
-        
-        # Messages tab
-        messages_frame = ttk.Frame(comm_notebook)
-        comm_notebook.add(messages_frame, text="Messages")
-        self.create_messages_view(messages_frame)
-        
-        # Calls tab
-        calls_frame = ttk.Frame(comm_notebook)
-        comm_notebook.add(calls_frame, text="Calls")
-        self.create_calls_view(calls_frame)
-        
-        # Contacts tab
-        contacts_frame = ttk.Frame(comm_notebook)
-        comm_notebook.add(contacts_frame, text="Contacts")
-        self.create_contacts_view(contacts_frame)
+    # Placeholder functions for features to be implemented
     
-    def create_messages_view(self, parent):
-        """Create messages view"""
-        parent.grid_rowconfigure(0, weight=1)
-        parent.grid_columnconfigure(0, weight=1)
-        
-        # Messages treeview
-        columns = ("Timestamp", "Contact", "Direction", "Message", "Keywords")
-        self.messages_tree = ttk.Treeview(parent, columns=columns, show="headings")
-        
-        for col in columns:
-            self.messages_tree.heading(col, text=col)
-            if col == "Message":
-                self.messages_tree.column(col, width=300)
-            else:
-                self.messages_tree.column(col, width=120)
-        
-        # Scrollbars
-        msg_v_scroll = ttk.Scrollbar(parent, orient="vertical", command=self.messages_tree.yview)
-        msg_h_scroll = ttk.Scrollbar(parent, orient="horizontal", command=self.messages_tree.xview)
-        self.messages_tree.configure(yscrollcommand=msg_v_scroll.set, xscrollcommand=msg_h_scroll.set)
-        
-        # Grid layout
-        self.messages_tree.grid(row=0, column=0, sticky="nsew", padx=(10, 0), pady=10)
-        msg_v_scroll.grid(row=0, column=1, sticky="ns", pady=10)
-        msg_h_scroll.grid(row=1, column=0, sticky="ew", padx=(10, 0))
+    def export_app_data(self):
+        """Export app data - placeholder"""
+        messagebox.showinfo("Info", "App data export feature coming soon")
     
-    def create_calls_view(self, parent):
-        """Create calls view"""
-        parent.grid_rowconfigure(0, weight=1)
-        parent.grid_columnconfigure(0, weight=1)
-        
-        # Calls treeview
-        columns = ("Timestamp", "Contact", "Duration", "Type")
-        self.calls_tree = ttk.Treeview(parent, columns=columns, show="headings")
-        
-        for col in columns:
-            self.calls_tree.heading(col, text=col)
-            self.calls_tree.column(col, width=150)
-        
-        # Scrollbars
-        call_v_scroll = ttk.Scrollbar(parent, orient="vertical", command=self.calls_tree.yview)
-        self.calls_tree.configure(yscrollcommand=call_v_scroll.set)
-        
-        # Grid layout
-        self.calls_tree.grid(row=0, column=0, sticky="nsew", padx=(10, 0), pady=10)
-        call_v_scroll.grid(row=0, column=1, sticky="ns", pady=10)
+    def view_timeline(self):
+        """View communication timeline - placeholder"""
+        messagebox.showinfo("Info", "Timeline view feature coming soon")
     
-    def create_contacts_view(self, parent):
-        """Create contacts view"""
-        parent.grid_rowconfigure(0, weight=1)
-        parent.grid_columnconfigure(0, weight=1)
-        
-        # Contacts treeview
-        columns = ("Name", "Phone", "Messages", "Calls", "Last Contact")
-        self.contacts_tree = ttk.Treeview(parent, columns=columns, show="headings")
-        
-        for col in columns:
-            self.contacts_tree.heading(col, text=col)
-            self.contacts_tree.column(col, width=150)
-        
-        # Scrollbar
-        contact_scroll = ttk.Scrollbar(parent, orient="vertical", command=self.contacts_tree.yview)
-        self.contacts_tree.configure(yscrollcommand=contact_scroll.set)
-        
-        # Grid layout
-        self.contacts_tree.grid(row=0, column=0, sticky="nsew", padx=(10, 0), pady=10)
-        contact_scroll.grid(row=0, column=1, sticky="ns", pady=10)
+    def view_map(self):
+        """View location data on map - placeholder"""
+        messagebox.showinfo("Info", "Map view feature coming soon")
     
-    def create_multimedia_tab(self):
-        """Create multimedia evidence tab"""
-        media_frame = ttk.Frame(self.notebook, padding="20")
-        self.notebook.add(media_frame, text="Photos & Videos")
+    def save_case(self):
+        """Save case configuration"""
+        if not self.validate_case_info():
+            return
         
-        media_frame.grid_rowconfigure(1, weight=1)
-        media_frame.grid_columnconfigure(0, weight=1)
+        filename = filedialog.asksaveasfilename(
+            defaultextension=".json",
+            filetypes=[("JSON files", "*.json"), ("All files", "*.*")],
+            title="Save Case Configuration"
+        )
         
-        # Controls
-        controls = ttk.Frame(media_frame)
-        controls.grid(row=0, column=0, sticky="ew", pady=(0, 10))
+        if not filename:
+            return
         
-        ttk.Button(controls, text="Export Multimedia List", 
-                  command=self.export_multimedia_csv).pack(side="left", padx=(0, 10))
-        
-        # Media notebook
-        media_notebook = ttk.Notebook(media_frame)
-        media_notebook.grid(row=1, column=0, sticky="nsew")
-        
-        # Photos tab
-        photos_frame = ttk.Frame(media_notebook)
-        media_notebook.add(photos_frame, text="Photos")
-        self.create_media_view(photos_frame, "photos")
-        
-        # Videos tab
-        videos_frame = ttk.Frame(media_notebook)
-        media_notebook.add(videos_frame, text="Videos")
-        self.create_media_view(videos_frame, "videos")
+        try:
+            case_data = {
+                'case_name': self.case_name.get(),
+                'examiner_name': self.examiner_name.get(),
+                'extraction_path': self.extraction_path.get(),
+                'saved_date': datetime.datetime.now().isoformat()
+            }
+            
+            with open(filename, 'w', encoding='utf-8') as f:
+                json.dump(case_data, f, indent=2)
+            
+            messagebox.showinfo("Success", f"Case saved to {filename}")
+            
+        except Exception as e:
+            messagebox.showerror("Save Error", f"Failed to save case: {e}")
     
-    def create_media_view(self, parent, media_type):
-        """Create media file view"""
-        parent.grid_rowconfigure(0, weight=1)
-        parent.grid_columnconfigure(0, weight=1)
+    def load_case(self):
+        """Load saved case configuration"""
+        filename = filedialog.askopenfilename(
+            filetypes=[("JSON files", "*.json"), ("All files", "*.*")],
+            title="Load Case Configuration"
+        )
         
-        # Media treeview
-        columns = ("Filename", "Size", "Date Modified", "Path")
-        tree = ttk.Treeview(parent, columns=columns, show="headings")
+        if not filename:
+            return
         
-        for col in columns:
-            tree.heading(col, text=col)
-            if col == "Path":
-                tree.column(col, width=300)
-            else:
-                tree.column(col, width=150)
-        
-        # Store tree reference
-        if media_type == "photos":
-            self.photos_tree = tree
+        try:
+            with open(filename, 'r', encoding='utf-8') as f:
+                case_data = json.load(f)
+            
+            # Load case information
+            self.case_name.set(case_data.get('case_name', ''))
+            self.examiner_name.set(case_data.get('examiner_name', ''))
+            self.extraction_path.set(case_data.get('extraction_path', ''))
+            
+            messagebox.showinfo("Success", "Case loaded successfully")
+            
+        except Exception as e:
+            messagebox.showerror("Load Error", f"Failed to load case: {e}")
+    
+    def on_closing(self):
+        """Handle application closing"""
+        if self.analysis_thread and self.analysis_thread.is_alive():
+            if messagebox.askyesno("Exit", "Analysis is running. Exit anyway?"):
+                self.root.destroy()
         else:
-            self.videos_tree = tree
-        
-        # Scrollbars
-        v_scroll = ttk.Scrollbar(parent, orient="vertical", command=tree.yview)
-        h_scroll = ttk.Scrollbar(parent, orient="horizontal", command=tree.xview)
-        tree.configure(yscrollcommand=v_scroll.set, xscrollcommand=h_scroll.set)
-        
-        # Grid layout
-        tree.grid(row=0, column=0, sticky="nsew", padx=(10, 0), pady=10)
-        v_scroll.grid(row=0, column=1, sticky="ns", pady=10)
-        h_scroll.grid(row=1, column=0, sticky="ew", padx=(10, 0))
+            self.root.destroy()
     
-    def create_apps_locations_tab(self):
-        """Create apps and locations tab"""
-        apps_frame = ttk.Frame(self.notebook, padding="20")
-        self.notebook.add(apps_frame, text="Apps & Locations")
-        
-        apps_frame.grid_rowconfigure(0, weight=1)
-        apps_frame.grid_columnconfigure(0, weight=1)
-        
-        # Apps and locations notebook
-        apps_notebook = ttk.Notebook(apps_frame)
-        apps_notebook.grid(row=0, column=0, sticky="nsew")
-        
-        # Apps tab
-        apps_tab_frame = ttk.Frame(apps_notebook)
-        apps_notebook.add(apps_tab_frame, text="App Data")
-        self.create_apps_view(apps_tab_frame)
-        
-        # Locations tab
-        locations_frame = ttk.Frame(apps_notebook)
-        apps_notebook.add(locations_frame, text="Location Data")
-        self.create_locations_view(locations_frame)
+    def run(self):
+        """Start the GUI application"""
+        self.root.mainloop()
+
+def main():
+    """Main function to start the evidence analysis GUI"""
+    print("[INFO] Starting GHOST Evidence Analysis Interface...")
     
-    def create_apps_view(self, parent):
-        """Create apps view"""
-        parent.grid_rowconfigure(1, weight=1)
-        parent.grid_columnconfigure(0, weight=1)
-        
-        # Controls
-        controls = ttk.Frame(parent)
-        controls.grid(row=0, column=0, sticky="ew", pady=(0, 10))
-        
-        ttk.Button(controls, text="Export App Data", 
-                  command=self.export_app_data).pack(side="left")
-        
-        # Apps treeview
-        columns = ("App Name", "Files Found", "Priority", "Data Available")
-        self.apps_tree = ttk.Treeview(parent, columns=columns, show="headings")
-        
-        for col in columns:
-            self.apps_tree.heading(col, text=col)
-            self.apps_tree.column(col, width=150)
-        
-        # Scrollbar
-        apps_scroll = ttk.Scrollbar(parent, orient="vertical", command=self.apps_tree.yview)
-        self.apps_tree.configure(yscrollcommand=apps_scroll.set)
-        
-        # Grid layout
-        self.apps_tree.grid(row=1, column=0, sticky="nsew", padx=(10, 0), pady=10)
-        apps_scroll.grid(row=1, column=1, sticky="ns", pady=10)
-    
-    def create_locations_view(self, parent):
-        """Create locations view"""
-        parent.grid_rowconfigure(1, weight=1)
-        parent.grid_columnconfigure(0, weight=1)
-        
-        # Controls
-        controls = ttk.Frame(parent)
-        controls.grid(row=0, column=0, sticky="ew", pady=(0, 10))
-        
-        ttk.Button(controls, text="Export Locations", 
-                  command=self.export_locations_csv).pack(side="left", padx=(0, 10))
-        ttk.Button(controls, text="View Map", 
-                  command=self.view_map).pack(side="left")
-        
-        # Locations treeview
-        columns = ("Timestamp", "Latitude", "Longitude", "Accuracy")
-        self.locations_tree = ttk.Treeview(parent, columns=columns, show="headings")
-        
-        for col in columns:
-            self.locations_tree.heading(col, text=col)
-            self.locations_tree.column(col, width=150)
-        
-        # Scrollbar
-        loc_scroll = ttk.Scrollbar(parent, orient="vertical", command=self.locations_tree.yview)
-        self.locations_tree.configure(yscrollcommand=loc_scroll.set)
-        
-        # Grid layout
-        self.locations_tree.grid(row=1, column=0, sticky="nsew", padx=(10, 0), pady=10)
-        loc_scroll.grid(row=1, column=1, sticky="ns", pady=10)
-    
-    def create_report_tab(
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
+    try:
+        app = EvidenceAnalysisGUI()
+        app.run()
+    except KeyboardInterrupt:
+        print("\nApplication closed by user")
+    except Exception as e:
+        print(f"Application error: {e}")
+        if 'messagebox' in globals():
+            messagebox.showerror("Application Error", f"Failed to start application:\n{str(e)}")
+exec(open('enhanced_forensic_exports.py').read())
+if __name__ == "__main__":
+    main()
