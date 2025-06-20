@@ -27,13 +27,7 @@ class ComprehensiveForensicExporter:
         self.case_name = gui_instance.case_name.get()
         self.examiner_name = gui_instance.examiner_name.get()
         self.timestamp = datetime.datetime.now()
-        # Create interface
-        self.setup_styling()
-        self.create_widgets()
-    
-        # Start update loops  # ← ADD THE NEW CODE HERE
-        self.update_time()
-        self.check_queues()
+       
     
     def export_detailed_call_logs_csv(self):
         """Export comprehensive call log analysis"""
