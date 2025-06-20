@@ -211,4 +211,193 @@ class AnalysisEngine:
                         'data_available': True,
                         'investigation_priority': 'High'
                     },
-                    'Instagram
+                    'Instagram': {
+                        'files_discovered': 8,
+                        'data_available': True,
+                        'investigation_priority': 'Medium'
+                    },
+                    'Safari': {
+                        'files_discovered': 12,
+                        'data_available': True,
+                        'investigation_priority': 'Low'
+                    }
+                }
+            },
+            
+            'investigative_leads': [
+                {
+                    'type': 'Communication Pattern',
+                    'priority': 'High',
+                    'description': 'Frequent communication with John Doe (13 total interactions)',
+                    'action_required': 'Investigate relationship and communication content'
+                },
+                {
+                    'type': 'Keyword Alert',
+                    'priority': 'Medium',
+                    'description': 'Multiple mentions of meetings in messages',
+                    'action_required': 'Analyze meeting locations and timing patterns'
+                },
+                {
+                    'type': 'App Data',
+                    'priority': 'High',
+                    'description': 'WhatsApp data available for deep analysis',
+                    'action_required': 'Extract and analyze WhatsApp messages and media'
+                }
+            ],
+            
+            'raw_evidence_data': {
+                'messages': [
+                    {
+                        'timestamp': '2025-06-19T14:30:00Z',
+                        'contact': 'John Doe',
+                        'text': 'Can we meet tomorrow at the usual place?',
+                        'is_from_me': False,
+                        'service': 'SMS',
+                        'source_file': 'sms.db'
+                    },
+                    {
+                        'timestamp': '2025-06-19T14:32:00Z',
+                        'contact': 'John Doe',
+                        'text': 'Sure, what time works for you?',
+                        'is_from_me': True,
+                        'service': 'SMS',
+                        'source_file': 'sms.db'
+                    },
+                    {
+                        'timestamp': '2025-06-18T09:15:00Z',
+                        'contact': 'Jane Smith',
+                        'text': 'Meeting at 3pm today, don\'t forget',
+                        'is_from_me': False,
+                        'service': 'SMS',
+                        'source_file': 'sms.db'
+                    },
+                    {
+                        'timestamp': '2025-06-17T16:45:00Z',
+                        'contact': 'Mike Johnson',
+                        'text': 'Need money for gas, can you help?',
+                        'is_from_me': False,
+                        'service': 'SMS',
+                        'source_file': 'sms.db'
+                    }
+                ],
+                'calls': [
+                    {
+                        'timestamp': '2025-06-19T15:00:00Z',
+                        'address': '555-0123',
+                        'contact': 'John Doe',
+                        'duration': 180,
+                        'type': 'outgoing',
+                        'source_file': 'call_history.db'
+                    },
+                    {
+                        'timestamp': '2025-06-18T10:30:00Z',
+                        'address': '555-0124',
+                        'contact': 'Jane Smith',
+                        'duration': 95,
+                        'type': 'incoming',
+                        'source_file': 'call_history.db'
+                    }
+                ],
+                'photos': [
+                    {
+                        'filename': 'IMG_2025_001.jpg',
+                        'path': '/Photos/IMG_2025_001.jpg',
+                        'size': 2457600,
+                        'date_created': '2025-06-19T12:00:00Z',
+                        'date_modified': '2025-06-19T12:00:00Z',
+                        'exif': {
+                            'gps_latitude': '40.7128',
+                            'gps_longitude': '-74.0060',
+                            'camera_make': 'Apple',
+                            'camera_model': 'iPhone 14'
+                        }
+                    },
+                    {
+                        'filename': 'IMG_2025_002.jpg',
+                        'path': '/Photos/IMG_2025_002.jpg',
+                        'size': 1843200,
+                        'date_created': '2025-06-18T16:30:00Z',
+                        'date_modified': '2025-06-18T16:30:00Z',
+                        'exif': {
+                            'camera_make': 'Apple',
+                            'camera_model': 'iPhone 14'
+                        }
+                    }
+                ],
+                'videos': [
+                    {
+                        'filename': 'VID_2025_001.mp4',
+                        'path': '/Videos/VID_2025_001.mp4',
+                        'size': 15728640,
+                        'date_created': '2025-06-17T14:00:00Z',
+                        'date_modified': '2025-06-17T14:00:00Z',
+                        'duration': 45
+                    }
+                ],
+                'locations': [
+                    {
+                        'timestamp': '2025-06-19T12:00:00Z',
+                        'latitude': '40.7128',
+                        'longitude': '-74.0060',
+                        'accuracy': '5.0',
+                        'source': 'GPS'
+                    },
+                    {
+                        'timestamp': '2025-06-18T09:30:00Z',
+                        'latitude': '40.7589',
+                        'longitude': '-73.9851',
+                        'accuracy': '8.0',
+                        'source': 'WiFi'
+                    }
+                ],
+                'contacts': [
+                    {
+                        'first_name': 'John',
+                        'last_name': 'Doe',
+                        'phone': '555-0123',
+                        'email': 'john.doe@email.com'
+                    },
+                    {
+                        'first_name': 'Jane',
+                        'last_name': 'Smith',
+                        'phone': '555-0124',
+                        'email': 'jane.smith@email.com'
+                    },
+                    {
+                        'first_name': 'Mike',
+                        'last_name': 'Johnson',
+                        'phone': '555-0125'
+                    }
+                ],
+                'apps': {
+                    'WhatsApp': {
+                        'files': [
+                            'WhatsApp/Databases/msgstore.db',
+                            'WhatsApp/Databases/wa.db',
+                            'WhatsApp/Media/WhatsApp Images/'
+                        ]
+                    },
+                    'Instagram': {
+                        'files': [
+                            'Instagram/instagram.db',
+                            'Instagram/Cache/'
+                        ]
+                    },
+                    'Safari': {
+                        'files': [
+                            'Safari/History.db',
+                            'Safari/Downloads.plist'
+                        ]
+                    }
+                }
+            }
+        }
+    
+    def cancel_analysis(self):
+        """Cancel the current analysis"""
+        self.cancel_flag.set()
+    
+    def _update_progress(self, progress: int, message: str):
+        """Update analysis progress"""
+        if self.on_progress_update and not self.cancel_flag.is_set():
+            self.on_progress_update(progress, message)
