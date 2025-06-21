@@ -1,29 +1,30 @@
 #!/usr/bin/env python3
 """
-GHOST Evidence Analysis - Locations Tab
-Displays location data and GPS analysis
+GHOST Evidence Analysis - Reports Tab
+Handles report generation and data export
 """
 
 import tkinter as tk
 from tkinter import ttk
 from typing import Dict, Any, Optional
 
-class LocationsTab:
-    """Location analysis tab"""
+class ReportsTab:
+    """Reports and export tab"""
     
-    def __init__(self, parent):
+    def __init__(self, parent, case_manager):
         self.parent = parent
+        self.case_manager = case_manager
         self.frame = ttk.Frame(parent, padding="20")
         self.create_widgets()
     
     def create_widgets(self):
-        """Create all widgets for locations tab"""
-        title_label = ttk.Label(self.frame, text="Apps & Locations", 
+        """Create all widgets for reports tab"""
+        title_label = ttk.Label(self.frame, text="Reports & Export", 
                                font=('Arial', 14, 'bold'))
         title_label.pack(pady=(0, 20))
         
         placeholder_label = ttk.Label(self.frame, 
-                                     text="Location data and app information will appear here after analysis")
+                                     text="Report generation and export options will appear here")
         placeholder_label.pack()
     
     def update_with_results(self, results: Dict[str, Any]):
