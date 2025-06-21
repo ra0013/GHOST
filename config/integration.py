@@ -17,7 +17,10 @@ class GHOSTIntegration:
     def __init__(self, environment: str = None):
         self.environment = environment or os.getenv("GHOST_ENV", "development")
         self.config = GHOSTConfigManager(environment=self.environment)
-        
+    def export_case_info(self, case_config: Dict[str, Any], output_path: Path) -> None:
+        with open(output_path, 'w') as f:
+            json.dump(case_config, f, indent=2)
+            
     def get_forensic_suite_config(self) -> Dict[str, Any]:
         """Configuration for the main forensic suite"""
         return {
