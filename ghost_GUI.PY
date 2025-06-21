@@ -23,18 +23,16 @@ except ImportError:
     print("Tkinter not available. Please install tkinter")
     sys.exit(1)
 
-# Add modules to path
-sys.path.insert(0, str(Path(__file__).parent / "modules"))
 
 # Import the focused forensic suite
 try:
-    from ghost_forensic_suite import FocusedForensicSuite
+    from core.forensic_suite import FocusedForensicSuite
     print("[OK] Evidence analysis engine loaded")
 except ImportError:
     try:
         # Fallback to modules if available
-        from config_manager import ConfigurationManager
-        from forensic_logger import ForensicLogger
+        from config.config_manager import ConfigurationManager
+        from logging.forensic_logger import ForensicLogger
         print("[OK] Core modules loaded (basic mode)")
     except ImportError as e:
         print(f"[ERROR] Could not load forensic modules: {e}")
@@ -1853,6 +1851,6 @@ def main():
         print(f"Application error: {e}")
         if 'messagebox' in globals():
             messagebox.showerror("Application Error", f"Failed to start application:\n{str(e)}")
-exec(open('enhanced_forensic_exports.py').read())
+#exec(open('enhanced_forensic_exports.py').read())
 if __name__ == "__main__":
     main()
