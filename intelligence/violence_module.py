@@ -1,5 +1,5 @@
 
-# intelligence/base_intelligence.py
+# intelligence/violence_intelligence.py
 """
 Intelligence Modules
 Pluggable crime-specific analysis modules
