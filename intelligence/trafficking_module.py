@@ -1,7 +1,7 @@
 
-# intelligence/base_intelligence.py
+# intelligence/trafficking_module.py
 """
-Intelligence Modules
+Trafficking Modules
 Pluggable crime-specific analysis modules
 """
 
