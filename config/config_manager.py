@@ -5,7 +5,6 @@ Handles all configuration file management and updates
 """
 
 import json
-import yaml
 from pathlib import Path
 from typing import Dict, List, Any, Optional
 import datetime
