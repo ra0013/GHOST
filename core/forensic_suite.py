@@ -28,8 +28,8 @@ sys.path.insert(0, str(Path(__file__).parent / "modules"))
 
 # Import forensic modules
 try:
-    from config_manager import ConfigurationManager
-    from forensic_logger import ForensicLogger
+    from config.config_manager import ConfigurationManager  
+    from logging.forensic_logger import ForensicLogger
     print("[OK] Core modules loaded successfully")
 except ImportError as e:
     print(f"[ERROR] Error importing modules: {e}")
