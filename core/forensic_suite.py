@@ -46,7 +46,9 @@ class FocusedForensicSuite:
         # Initialize core components
         self.config_manager = ConfigurationManager()
         self.logger = ForensicLogger(case_name, examiner_name)
-        
+        self.integration = getattr(self, 'integration', None)
+        self.case_config = getattr(self, 'case_config', {})
+
         # Evidence categories
         self.evidence_data = {
             'messages': [],
