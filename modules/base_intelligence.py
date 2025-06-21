@@ -1,4 +1,4 @@
-# modules/intelligence_modules.py
+# intelligence/base_intelligence.py
 """
 Intelligence Modules
 Pluggable crime-specific analysis modules
