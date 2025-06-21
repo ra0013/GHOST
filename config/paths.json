@@ -1,0 +1,664 @@
+# ==========================================
+# GHOST Configuration Files Examples
+# ==========================================
+
+# config/paths.json - Data source paths configuration
+{
+  "base": {
+    "app_root": "${APP_ROOT:.}",
+    "data_dir": "${DATA_DIR:./data}",
+    "logs_dir": "${LOGS_DIR:./logs}",
+    "temp_dir": "${TEMP_DIR:./temp}",
+    "output_dir": "${OUTPUT_DIR:./output}",
+    "config_dir": "${CONFIG_DIR:./config}",
+    "cache_dir": "${CACHE_DIR:./cache}"
+  },
+  "ios": {
+    "messages": [
+      "var/mobile/Library/SMS/sms.db",
+      "var/mobile/Library/SMS/sms.backup.db",
+      "Library/SMS/sms.db",
+      "private/var/mobile/Library/SMS/sms.db"
+    ],
+    "call_history": [
+      "var/mobile/Library/CallHistoryDB/CallHistory.storedata",
+      "var/mobile/Library/CallHistory/CallHistory.storedata",
+      "Library/CallHistory.storedata"
+    ],
+    "contacts": [
+      "var/mobile/Library/AddressBook/AddressBook.sqlitedb",
+      "var/mobile/Library/AddressBook/AddressBookImages.sqlitedb",
+      "Library/AddressBook/AddressBook.sqlitedb"
+    ],
+    "safari": [
+      "var/mobile/Library/Safari/History.db",
+      "Library/Safari/History.db",
+      "var/mobile/Containers/Data/Application/*/Library/Safari/History.db"
+    ],
+    "photos": [
+      "var/mobile/Media/PhotoData/Photos.sqlite",
+      "var/mobile/Media/DCIM/**/*.jpg",
+      "var/mobile/Media/DCIM/**/*.png",
+      "var/mobile/Media/DCIM/**/*.heic"
+    ],
+    "locations": [
+      "var/mobile/Library/Caches/locationd/cache_encryptedA.db",
+      "var/mobile/Library/Caches/com.apple.routined/Cache.sqlite",
+      "var/mobile/Library/CoreLocation/clients.plist"
+    ],
+    "keychain": [
+      "var/Keychains/keychain-2.db",
+      "var/mobile/Library/Keychains/keychain-2.db"
+    ]
+  },
+  "android": {
+    "messages": [
+      "data/data/com.android.providers.telephony/databases/mmssms.db",
+      "data/data/com.android.providers.telephony/databases/telephony.db",
+      "data/data/com.android.mms/databases/mms.db"
+    ],
+    "call_history": [
+      "data/data/com.android.providers.contacts/databases/calllog.db",
+      "data/data/com.android.providers.contacts/databases/contacts2.db"
+    ],
+    "contacts": [
+      "data/data/com.android.providers.contacts/databases/contacts2.db"
+    ],
+    "browser": [
+      "data/data/com.android.browser/databases/browser.db",
+      "data/data/com.google.android.browser/databases/browser.db",
+      "data/data/com.chrome.beta/databases/history.db"
+    ],
+    "whatsapp": [
+      "data/data/com.whatsapp/databases/msgstore.db",
+      "data/data/com.whatsapp/databases/wa.db"
+    ]
+  },
+  "common_apps": {
+    "whatsapp": [
+      "var/mobile/Containers/Shared/AppGroup/*/ChatStorage.sqlite",
+      "data/data/com.whatsapp/databases/msgstore.db",
+      "WhatsApp/Databases/msgstore.db"
+    ],
+    "telegram": [
+      "var/mobile/Containers/Data/Application/*/Documents/cache.db",
+      "data/data/org.telegram.messenger/databases/cache4.db"
+    ],
+    "signal": [
+      "var/mobile/Containers/Data/Application/*/Documents/database.sqlite",
+      "data/data/org.thoughtcrime.securesms/databases/signal.db"
+    ],
+    "snapchat": [
+      "var/mobile/Containers/Data/Application/*/Documents/tc.db",
+      "data/data/com.snapchat.android/databases/tcspahn.db"
+    ],
+    "instagram": [
+      "var/mobile/Containers/Data/Application/*/Documents/instagram.db",
+      "data/data/com.instagram.android/databases/direct.db"
+    ],
+    "facebook": [
+      "var/mobile/Containers/Data/Application/*/Documents/FBApp.db",
+      "data/data/com.facebook.katana/databases/threads_db2"
+    ]
+  }
+}
+
+# config/keywords.json - Investigation keywords configuration
+{
+  "narcotics": {
+    "drugs": {
+      "street_names": [
+        "molly", "mdma", "ecstasy", "x", "rolls", "snow", "white", "powder",
+        "ice", "crystal", "meth", "glass", "crank", "blow", "coke", "yayo",
+        "weed", "bud", "green", "herb", "mary jane", "ganja", "chronic",
+        "pills", "tabs", "bars", "percs", "oxys", "addies", "blues", "thirties"
+      ],
+      "hard_drugs": [
+        "heroin", "fentanyl", "fent", "china white", "black tar",
+        "cocaine", "crack", "rock", "methamphetamine", "meth", "speed"
+      ],
+      "cannabis": [
+        "weed", "marijuana", "pot", "grass", "bud", "green", "chronic",
+        "kush", "dank", "loud", "fire", "gas", "za", "zaza"
+      ]
+    },
+    "transactions": [
+      "gram", "ounce", "oz", "pound", "lb", "kilo", "key", "brick",
+      "front", "fronted", "spot", "connect", "plug", "dealer", "trap",
+      "move", "flip", "push", "serve", "bag", "sack", "eighth", "quarter",
+      "half", "zip", "p", "qp", "hp"
+    ],
+    "locations": [
+      "corner", "block", "trap house", "spot", "stash", "drop",
+      "meet", "pickup", "delivery", "usual place", "park"
+    ],
+    "money": [
+      "bread", "cash", "paper", "money", "dough", "stacks", "bands",
+      "racks", "blue faces", "hundreds", "twenties"
+    ]
+  },
+  "financial_fraud": {
+    "payment_methods": [
+      "gift card", "amazon card", "itunes card", "google play card",
+      "steam card", "walmart card", "target card", "visa gift card",
+      "western union", "moneygram", "bitcoin", "crypto", "wire transfer",
+      "paypal", "cashapp", "venmo", "zelle", "apple pay", "samsung pay"
+    ],
+    "scam_indicators": [
+      "emergency", "urgent", "immediately", "asap", "stranded", "customs",
+      "lawyer fees", "bail money", "hospital bills", "medical emergency",
+      "guaranteed return", "risk free", "investment opportunity",
+      "double your money", "get rich quick", "work from home",
+      "prince", "inheritance", "lottery", "winner", "congratulations"
+    ],
+    "personal_info": [
+      "ssn", "social security", "social security number", "pin", "pin number",
+      "password", "account number", "routing number", "credit card",
+      "debit card", "card number", "cvv", "security code", "expiration date",
+      "mother's maiden name", "date of birth", "full name", "address"
+    ],
+    "romance_scam": [
+      "love you", "soulmate", "destiny", "meant to be", "true love",
+      "never felt this way", "special connection", "can't wait to meet",
+      "need money", "emergency came up", "help me", "trust me"
+    ]
+  },
+  "domestic_violence": {
+    "threats": [
+      "hurt you", "kill you", "beat you", "destroy you", "end you",
+      "make you pay", "regret this", "sorry you'll be", "mess you up",
+      "teach you a lesson", "show you", "put you in your place"
+    ],
+    "control": [
+      "belong to me", "property", "own you", "control you", "mine",
+      "can't leave", "never let you", "always watching", "tracking you",
+      "know where you are", "follow you", "checking on you"
+    ],
+    "isolation": [
+      "no one cares", "no one will help", "nowhere to go",
+      "no friends", "family doesn't want you", "only have me",
+      "cut off", "stay away from", "don't talk to"
+    ],
+    "emotional_abuse": [
+      "worthless", "stupid", "ugly", "fat", "useless", "pathetic",
+      "nobody else would want you", "lucky to have me", "can't do better",
+      "nothing without me", "crazy", "making it up"
+    ]
+  },
+  "human_trafficking": {
+    "control_language": [
+      "owe me", "debt", "work off", "until paid", "belong to me",
+      "property", "investment", "bought you", "paid for you",
+      "work for me", "earn your keep", "pay me back"
+    ],
+    "movement": [
+      "new city", "travel", "move you", "relocate", "different state",
+      "across country", "border", "passport", "papers", "documents",
+      "bus ticket", "plane ticket", "drive you", "pick you up"
+    ],
+    "exploitation": [
+      "work for me", "clients", "johns", "dates", "appointments",
+      "quota", "earnings", "money you made", "bring in", "make money",
+      "customers", "business", "party", "entertainment"
+    ],
+    "isolation_control": [
+      "can't leave", "locked in", "watched", "monitored", "tracked",
+      "no phone", "no contact", "stay inside", "don't go out",
+      "permission", "ask first", "tell me where", "check in"
+    ]
+  },
+  "extremism": {
+    "radicalization": [
+      "jihad", "holy war", "infidel", "kafir", "crusade", "race war",
+      "boogaloo", "day of the rope", "white genocide", "great replacement",
+      "accelerationism", "collapse", "happening", "dotr"
+    ],
+    "violence_planning": [
+      "target", "soft target", "attack", "operation", "mission",
+      "martyrdom", "sacrifice", "weapons", "explosives", "bomb",
+      "mass casualty", "body count", "high score"
+    ],
+    "hate_speech": [
+      "subhuman", "animals", "vermin", "cockroaches", "parasites",
+      "need to be eliminated", "final solution", "cleansing", "purge"
+    ]
+  },
+  "child_exploitation": {
+    "grooming": [
+      "our secret", "don't tell anyone", "special relationship",
+      "mature for your age", "understand you", "parents don't get it",
+      "meet in person", "come over", "when alone", "send pictures"
+    ],
+    "exploitation": [
+      "modeling", "pictures", "videos", "webcam", "private show",
+      "just between us", "make money", "easy money", "help you out"
+    ],
+    "control": [
+      "get in trouble", "parents will be mad", "our fault",
+      "nobody will believe you", "ruin your life", "tell everyone"
+    ]
+  }
+}
+
+# config/databases.json - Database schema configuration
+{
+  "schemas": {
+    "ios_messages": {
+      "table": "message",
+      "columns": {
+        "id": "ROWID",
+        "timestamp": "date",
+        "text": "text",
+        "is_from_me": "is_from_me",
+        "service": "service",
+        "handle_id": "handle_id",
+        "guid": "guid",
+        "is_read": "is_read",
+        "is_delivered": "is_delivered",
+        "is_sent": "is_sent"
+      },
+      "joins": {
+        "handle": {
+          "table": "handle",
+          "on": "message.handle_id = handle.ROWID",
+          "columns": {
+            "contact": "id",
+            "service": "service"
+          }
+        },
+        "attachment": {
+          "table": "message_attachment_join",
+          "on": "message.ROWID = message_attachment_join.message_id",
+          "columns": {
+            "attachment_id": "attachment_id"
+          }
+        }
+      },
+      "timestamp_conversion": "datetime(date/1000000000 + 978307200, 'unixepoch')",
+      "filters": {
+        "recent_days": 90,
+        "max_records": 10000,
+        "exclude_deleted": false
+      }
+    },
+    "android_sms": {
+      "table": "sms",
+      "columns": {
+        "id": "_id",
+        "timestamp": "date",
+        "text": "body",
+        "is_from_me": "type",
+        "contact": "address",
+        "thread_id": "thread_id",
+        "read": "read",
+        "status": "status"
+      },
+      "timestamp_conversion": "datetime(date/1000, 'unixepoch')",
+      "type_mapping": {
+        "1": "incoming",
+        "2": "outgoing",
+        "3": "draft",
+        "4": "outbox",
+        "5": "failed",
+        "6": "queued"
+      }
+    },
+    "ios_call_history": {
+      "table": "ZCALLRECORD",
+      "columns": {
+        "id": "Z_PK",
+        "timestamp": "ZDATE",
+        "duration": "ZDURATION",
+        "contact": "ZADDRESS",
+        "answered": "ZANSWERED",
+        "originated": "ZORIGINATED",
+        "call_type": "ZCALLTYPE"
+      },
+      "timestamp_conversion": "datetime(ZDATE + 978307200, 'unixepoch')"
+    },
+    "android_call_log": {
+      "table": "calls",
+      "columns": {
+        "id": "_id",
+        "timestamp": "date",
+        "duration": "duration",
+        "contact": "number",
+        "name": "name",
+        "type": "type"
+      },
+      "timestamp_conversion": "datetime(date/1000, 'unixepoch')",
+      "type_mapping": {
+        "1": "incoming",
+        "2": "outgoing",
+        "3": "missed"
+      }
+    },
+    "whatsapp_messages": {
+      "table": "ZWAMESSAGE",
+      "columns": {
+        "id": "Z_PK",
+        "timestamp": "ZMESSAGEDATE",
+        "text": "ZTEXT",
+        "is_from_me": "ZISFROMME",
+        "chat_session": "ZCHATSESSION",
+        "message_type": "ZMESSAGETYPE"
+      },
+      "joins": {
+        "chat": {
+          "table": "ZWACHATSESSION",
+          "on": "ZWAMESSAGE.ZCHATSESSION = ZWACHATSESSION.Z_PK",
+          "columns": {
+            "contact": "ZCONTACTJID",
+            "chat_name": "ZPARTNERNAME"
+          }
+        }
+      },
+      "timestamp_conversion": "datetime(ZMESSAGEDATE + 978307200, 'unixepoch')"
+    }
+  },
+  "encryption": {
+    "detection_enabled": true,
+    "common_passwords": [
+      "", "password", "admin", "123456", "default", "user", "root", "test",
+      "password123", "admin123", "qwerty", "letmein", "welcome", "guest"
+    ],
+    "entropy_threshold": 7.5,
+    "bypass_methods": [
+      "common_passwords", "app_specific", "keychain_extraction", "brute_force"
+    ],
+    "sqlcipher": {
+      "enabled": true,
+      "iterations": 64000,
+      "page_size": 1024
+    }
+  },
+  "performance": {
+    "max_query_time": 30,
+    "chunk_size": 1000,
+    "memory_limit_mb": 256,
+    "index_creation": true
+  }
+}
+
+# config/analysis.json - Analysis configuration
+{
+  "processing": {
+    "max_workers": "${MAX_WORKERS:8}",
+    "chunk_size": 1000,
+    "memory_limit_mb": 512,
+    "timeout_seconds": 300,
+    "parallel_processing": true,
+    "batch_processing": true,
+    "progress_reporting": true
+  },
+  "intelligence": {
+    "enabled_modules": [
+      "narcotics", "financial_fraud", "domestic_violence", 
+      "human_trafficking", "extremism", "child_exploitation"
+    ],
+    "risk_thresholds": {
+      "critical": 8,
+      "high": 6,
+      "medium": 4,
+      "low": 1
+    },
+    "keyword_matching": {
+      "case_sensitive": false,
+      "partial_match": true,
+      "fuzzy_matching": false,
+      "fuzzy_threshold": 0.8,
+      "stemming": false,
+      "synonyms": true
+    },
+    "pattern_detection": {
+      "enabled": true,
+      "regex_patterns": true,
+      "machine_learning": false,
+      "context_analysis": true
+    }
+  },
+  "timeline": {
+    "default_days": 90,
+    "max_days": 365,
+    "group_by_day": true,
+    "include_deleted": true,
+    "correlation_window_hours": 24,
+    "timezone_handling": "local"
+  },
+  "filtering": {
+    "min_message_length": 3,
+    "max_message_length": 10000,
+    "exclude_system_messages": true,
+    "include_media_messages": true,
+    "deduplicate": true
+  },
+  "correlation": {
+    "enabled": true,
+    "contact_correlation": true,
+    "location_correlation": true,
+    "time_correlation": true,
+    "keyword_correlation": true,
+    "cross_platform": true
+  },
+  "output": {
+    "include_metadata": true,
+    "include_statistics": true,
+    "include_timeline": true,
+    "include_network_analysis": true,
+    "redact_sensitive": false,
+    "format_timestamps": true
+  }
+}
+
+# config/modules.json - Intelligence modules configuration
+{
+  "narcotics": {
+    "enabled": true,
+    "priority": "high",
+    "description": "Drug trafficking and distribution analysis",
+    "risk_weights": {
+      "hard_drugs": 5,
+      "distribution_indicators": 4,
+      "quantity_mentions": 3,
+      "money_amounts": 2,
+      "location_references": 2,
+      "multiple_contacts": 3
+    },
+    "patterns": [
+      "\\b\\d+\\s*(gram|g|oz|ounce|lb|pound)\\b",
+      "\\$\\d+\\s*(each|per|for)",
+      "\\b(front|fronted|credit)\\b",
+      "\\b(pickup|drop|meet)\\s+(at|@)\\s+\\w+"
+    ],
+    "thresholds": {
+      "network_analysis": 3,
+      "frequency_analysis": 5,
+      "escalation_threshold": 7
+    }
+  },
+  "financial_fraud": {
+    "enabled": true,
+    "priority": "high",
+    "description": "Financial fraud and scam detection",
+    "risk_weights": {
+      "gift_cards": 4,
+      "wire_transfers": 4,
+      "personal_info_requests": 3,
+      "urgency_indicators": 2,
+      "romance_indicators": 3,
+      "investment_scams": 4
+    },
+    "amount_thresholds": {
+      "low": 100,
+      "medium": 1000,
+      "high": 10000,
+      "critical": 50000
+    },
+    "patterns": [
+      "\\$\\d{3,}",
+      "\\b\\d{4}-\\d{4}-\\d{4}-\\d{4}\\b",
+      "\\b\\d{3}-\\d{2}-\\d{4}\\b"
+    ]
+  },
+  "domestic_violence": {
+    "enabled": true,
+    "priority": "critical",
+    "description": "Domestic violence threat detection",
+    "risk_weights": {
+      "direct_threats": 5,
+      "control_language": 4,
+      "isolation_tactics": 3,
+      "emotional_abuse": 3,
+      "escalation_patterns": 4
+    },
+    "escalation_detection": {
+      "enabled": true,
+      "time_window_hours": 24,
+      "frequency_threshold": 3,
+      "severity_increase": 2
+    },
+    "immediate_alert": {
+      "enabled": true,
+      "keywords": ["kill you", "hurt you", "end you", "destroy you"],
+      "notify_threshold": 8
+    }
+  },
+  "human_trafficking": {
+    "enabled": true,
+    "priority": "critical",
+    "description": "Human trafficking indicator detection",
+    "risk_weights": {
+      "control_language": 5,
+      "movement_indicators": 4,
+      "exploitation_terms": 4,
+      "isolation_control": 4,
+      "financial_control": 3
+    },
+    "movement_analysis": {
+      "enabled": true,
+      "location_tracking": true,
+      "timeline_analysis": true
+    }
+  },
+  "extremism": {
+    "enabled": true,
+    "priority": "critical",
+    "description": "Extremist content and radicalization detection",
+    "risk_weights": {
+      "violence_planning": 5,
+      "radicalization_content": 4,
+      "hate_speech": 3,
+      "group_affiliation": 4,
+      "weapons_references": 5
+    },
+    "monitoring": {
+      "enabled": true,
+      "real_time": false,
+      "network_analysis": true
+    }
+  },
+  "child_exploitation": {
+    "enabled": true,
+    "priority": "critical",
+    "description": "Child exploitation and grooming detection",
+    "risk_weights": {
+      "grooming_language": 5,
+      "exploitation_terms": 5,
+      "age_references": 4,
+      "meeting_attempts": 4,
+      "secrecy_language": 3
+    },
+    "age_detection": {
+      "enabled": true,
+      "threshold_years": 18,
+      "pattern_matching": true
+    },
+    "immediate_alert": {
+      "enabled": true,
+      "notify_threshold": 7
+    }
+  }
+}
+
+# config/export.json - Export configuration
+{
+  "formats": {
+    "json": {
+      "enabled": true,
+      "pretty_print": true,
+      "include_metadata": true,
+      "include_raw_data": false,
+      "compression": false
+    },
+    "csv": {
+      "enabled": true,
+      "delimiter": ",",
+      "encoding": "utf-8",
+      "include_headers": true,
+      "quote_char": "\"",
+      "escape_char": "\\",
+      "separate_files": true
+    },
+    "xlsx": {
+      "enabled": true,
+      "multiple_sheets": true,
+      "freeze_header": true,
+      "auto_filter": true,
+      "conditional_formatting": true,
+      "charts": false
+    },
+    "html": {
+      "enabled": true,
+      "template": "default",
+      "include_charts": true,
+      "interactive": true,
+      "css_framework": "bootstrap"
+    },
+    "pdf": {
+      "enabled": false,
+      "template": "report",
+      "include_images": false,
+      "page_size": "letter",
+      "orientation": "portrait"
+    }
+  },
+  "output": {
+    "directory": "@{base.output_dir}",
+    "filename_pattern": "ghost_export_{case_name}_{timestamp}",
+    "timestamp_format": "%Y%m%d_%H%M%S",
+    "create_subdirs": true,
+    "compression": {
+      "enabled": true,
+      "format": "zip",
+      "level": 6,
+      "password_protect": false
+    }
+  },
+  "content": {
+    "include_timeline": true,
+    "include_statistics": true,
+    "include_network_analysis": true,
+    "include_risk_assessment": true,
+    "include_raw_messages": true,
+    "include_media_references": true,
+    "include_contact_analysis": true
+  },
+  "privacy": {
+    "redact_pii": false,
+    "hash_identifiers": false,
+    "encrypt_exports": false,
+    "redaction_char": "*",
+    "preserve_length": true,
+    "redact_patterns": [
+      "\\b\\d{3}-\\d{2}-\\d{4}\\b",
+      "\\b\\d{4}-\\d{4}-\\d{4}-\\d{4}\\b"
+    ]
+  },
+  "splitting": {
+    "enabled": false,
+    "max_records_per_file": 10000,
+    "split_by_date": false,
+    "split_by_contact": false,
+    "split_by_module": true
+  }
+}
