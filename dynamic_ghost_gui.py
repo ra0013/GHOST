@@ -27,8 +27,10 @@ except ImportError:
 try:
     from config.integration import GHOSTIntegration, get_ghost_integration
     print("[OK] GHOST integration system loaded")
-except ImportError:
-    print("[ERROR] Could not load GHOST integration system")
+except ImportError as e:
+    print(f"[ERROR] Could not load GHOST integration system: {e}")
+    import traceback
+    traceback.print_exc()
     sys.exit(1)
 
 # Import the forensic suite
