@@ -23,13 +23,10 @@ if sys.platform.startswith('win'):
     sys.stdout = codecs.getwriter('utf-8')(sys.stdout.buffer, 'strict')
     sys.stderr = codecs.getwriter('utf-8')(sys.stderr.buffer, 'strict')
 
-# Add modules to path
-sys.path.insert(0, str(Path(__file__).parent / "modules"))
-
 # Import forensic modules
 try:
     from config.config_manager import ConfigurationManager  
-    from logging.forensic_logger import ForensicLogger
+    from logger.forensic_logger import ForensicLogger
     print("[OK] Core modules loaded successfully")
 except ImportError as e:
     print(f"[ERROR] Error importing modules: {e}")
